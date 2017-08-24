@@ -38,7 +38,7 @@ First include it in your classpath:
 
 [IMPORTANT]
 ======
-Admin template will bring the following transitive dependencies:
+Admin persistence will bring the following transitive dependencies:
 
 ----
 <dependency>
