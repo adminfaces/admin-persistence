@@ -138,7 +138,7 @@ public class EntityManagerProducer {
 
 ----
 
-Extend BaseEntity on your JPA entities:
+Extend `BaseEntity` (or implement `PersistenceEntity` interface) on your JPA entities:
 
 [source,java]
 ----
