@@ -162,7 +162,6 @@ Create a service which will hold your business logic and extend CrudService:
 @Stateless
 public class CarService extends CrudService<Car, Integer>  {
 
-
 }
 ----
 
@@ -207,7 +206,6 @@ Real pagination involves lots of boilerplate code, in admin-persistence it is a 
        rows="5" rowKey="#{c.id}"
        lazy="true" paginator="true"
       <!-- other attributes -->
-
 ----
 
 TIP: Full source code for this xhtml page can be https://github.com/adminfaces/admin-starter-persistence/blob/master/src/main/webapp/car-list.xhtml[found here^].
@@ -305,6 +303,25 @@ protected Criteria<Car, Car> configRestrictions(Filter<Car> filter) {
 IMPORTANT: Any datatable update (ajax or not) will trigger the configRestrictions.
 
 NOTE: Besides filtering the `filter` helper class also holds *pagination* and *sort* information.
+
+[WARNING]
+====
+
+By default filters are saved on `Session` so when user goes to another page (e.g a detail) and comes back to list the tables keeps it's previous filters.
+
+You can change this behavior by overriding  keepFiltersInSession method on you Bean:
+
+.CarListMB
+[source,java]
+----
+    @Override
+    public boolean keepFiltersInSession() {
+        return false;
+    }
+----
+
+====
+
 
 == Snapshots
 
