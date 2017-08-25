@@ -118,7 +118,6 @@ As Admin Persistence uses https://deltaspike.apache.org/documentation/data.html#
 TIP: See https://docs.jboss.org/hibernate/orm/5.0/topical/html/metamodelgen/MetamodelGenerator.html#_usage_within_the_ide[this tutorial^] for configuring it on your IDE.
 
 
-
 And expose an `entity manager` via CDI producer:
 
 
@@ -169,7 +168,7 @@ public class CarService extends CrudService<Car, Integer>  {
 
 TIP: Full source code for CarService can be https://github.com/adminfaces/admin-starter-persistence/blob/master/src/main/java/com/github/adminfaces/starter/service/CarService.java#L24[found here^].
 
-Extend CrudMB and provide your service for your JSF managed beans to have CRUD support out of the box:
+Extend CrudMB and provide your service to your JSF managed beans to enable CRUD support out of the box:
 
 [source,java]
 ----
@@ -204,10 +203,10 @@ Real pagination involves lots of boilerplate code, in admin-persistence it is a 
 .xhtml page
 [source,html]
 ----
- <p:dataTable widgetVar="carsTable" var="c" value="#{carListMB.list}" rows="5"
-                                 rowKey="#{c.id}" lazy="true" paginator="true"
-
-                                 <!-- other attributes -->
+ <p:dataTable widgetVar="carsTable" var="c" value="#{carListMB.list}" 
+       rows="5" rowKey="#{c.id}"
+       lazy="true" paginator="true"
+      <!-- other attributes -->
 
 ----
 
