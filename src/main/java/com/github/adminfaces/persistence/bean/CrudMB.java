@@ -261,21 +261,21 @@ public abstract class CrudMB<T extends BaseEntity> {
         if (isNew()) {
             beforeInsert();
             crudService.insert(entity);
-            afterInsert();
             addDetailMessage(getCreateMessage());
+            afterInsert();
         } else {
             beforeUpdate();
             crudService.update(entity);
-            afterUpdate();
             addDetailMessage(getUpdateMessage());
+            afterUpdate();
         }
     }
 
     public void remove() {
         beforeRemove();
         crudService.remove(entity);
-        afterRemove();
         addDetailMessage(getRemoveMessage());
+        afterRemove();
     }
 
     public void clear() {
