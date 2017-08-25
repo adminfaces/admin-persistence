@@ -14,19 +14,19 @@ public class SessionFilter implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<Class<? extends CrudMB>, Filter<? extends PersistenceEntity>> sessionMap = new HashMap<>();
+    private Map<String, Filter<? extends PersistenceEntity>> sessionMap = new HashMap<>();
 
-    public void add(Class<? extends CrudMB> key, Filter<? extends PersistenceEntity> value) {
+    public void add(String key, Filter<? extends PersistenceEntity> value) {
         sessionMap.put(key, value);
     }
 
-    public void clear(Class<? extends CrudMB> key) {
+    public void clear(String key) {
         if (sessionMap.containsKey(key)) {
             sessionMap.put(key, null);
         }
     }
 
-    public Filter<? extends PersistenceEntity> get(Class<? extends CrudMB> key) {
+    public Filter<? extends PersistenceEntity> get(String key) {
         return sessionMap.get(key);
     }
 
