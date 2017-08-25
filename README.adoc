@@ -17,7 +17,7 @@
 image:https://maven-badges.herokuapp.com/maven-central/com.github.adminfaces/admin-persistence/badge.svg["Maven Central",link="http://search.maven.org/#search|ga|1|admin-persistence"]
 image:https://badges.gitter.im/Join%20Chat.svg[link="https://gitter.im/adminfaces?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 
-An utility module for CRUD operations for https://github.com/adminfaces[AdminFaces applications^] based on Apache DeltaSpike Data module.
+CRUD operations like a breeze for https://github.com/adminfaces[AdminFaces applications^] based on Apache DeltaSpike Data module.
 
 == Features
 
@@ -118,6 +118,9 @@ As Admin Persistence uses https://deltaspike.apache.org/documentation/data.html#
 </plugin>
 ----
 
+TIP: See https://docs.jboss.org/hibernate/orm/5.0/topical/html/metamodelgen/MetamodelGenerator.html#_usage_within_the_ide[this tutorial^] for configuring it on your IDE.
+
+
 
 And expose an `entity manager` via CDI producer:
 
@@ -148,12 +151,13 @@ import com.github.adminfaces.persistence.model.BaseEntity;
 @Table(name = "car")
 public class Car extends BaseEntity {
 
-public Integer getId() {
+public Integer getId() { <1>
         return id;
     }
 
 }
 ----
+<1> You only need to implement a `getId()` which returns the entity primary key.
 
 Create a service which will hold your business logic and extend CrudService:
 
@@ -197,7 +201,65 @@ TIP: Full source code for CarListMB can be https://github.com/adminfaces/admin-s
 
 == Pagination
 
-TODO
+Real pagination involves lots of boilerplate code, in admin-persistence it is a mater of using a Primefaces lazy datatable and bind it to a CrudMB list:
+
+
+.xhtml page
+[source,html]
+----
+ <p:dataTable widgetVar="carsTable" var="c" value="#{carListMB.list}" rows="5"
+                                 rowKey="#{c.id}" lazy="true" paginator="true"
+
+                                 <!-- other attributes -->
+
+----
+
+TIP: Full source code for this xhtml page can be https://github.com/adminfaces/admin-starter-persistence/blob/master/src/main/webapp/car-list.xhtml[found here^].
+
+
+== Pagination filtering
+
+For restring pages in the lazy datatable you just need to override `configRestrictions` method in the mabaged bean service (the service we set with *setCrudService* in CarListMB:
+
+.CarService
+[source,java]
+----
+protected Criteria<Car, Car> configRestrictions(Filter<Car> filter) {
+
+        Criteria<Car, Car> criteria = criteria();
+
+        //create restrictions based on parameters map
+        if (filter.hasParam("id")) {
+            criteria.eq(Car_.id, filter.getIntParam("id"));
+        }
+
+        if (filter.hasParam("minPrice") && filter.hasParam("maxPrice")) {
+            criteria.between(Car_.price, filter.getDoubleParam("minPrice"), filter.getDoubleParam("maxPrice"));
+        } else if (filter.hasParam("minPrice")) {
+            criteria.gtOrEq(Car_.price, filter.getDoubleParam("minPrice"));
+        } else if (filter.hasParam("maxPrice")) {
+            criteria.ltOrEq(Car_.price, filter.getDoubleParam("maxPrice"));
+        }
+
+        //create restrictions based on filter entity
+        if (has(filter.getEntity())) {
+            Car filterEntity = filter.getEntity();
+            if (has(filterEntity.getModel())) {
+                criteria.likeIgnoreCase(Car_.model, "%"+filterEntity.getModel());
+            }
+
+            if (has(filterEntity.getPrice())) {
+                criteria.eq(Car_.price, filterEntity.getPrice());
+            }
+
+            if (has(filterEntity.getName())) {
+                criteria.likeIgnoreCase(Car_.name, "%"+filterEntity.getName());
+            }
+        }
+        return criteria;
+    }
+
+----
 
 
 == Snapshots

@@ -93,22 +93,22 @@ public class Filter<T extends Serializable> {
     }
 
     public String getStringParam(String key) {
-        return hasParam(key) ? getParam(key).toString(): null;
+        return hasParam(key) ? getParam(key).toString() : null;
     }
 
     public Integer getIntParam(String key) {
-        return hasParam(key) ? (Integer) getParam(key): null;
+        return hasParam(key) ? Integer.parseInt(getStringParam(key)) : null;
     }
 
     public Long getLongParam(String key) {
-        return hasParam(key) ? (Long) getParam(key): null;
+        return hasParam(key) ? Long.parseLong(getStringParam(key)) : null;
     }
 
     public Boolean getBooleanParam(String key) {
-        return hasParam(key) ? (Boolean) getParam(key):null;
+        return hasParam(key) ? Boolean.parseBoolean(getStringParam(key)) : null;
     }
 
     public Double getDoubleParam(String key) {
-        return hasParam(key) ? (Double) getParam(key):null;
+        return hasParam(key) ? Double.parseDouble(getStringParam(key)) : null;
     }
 }
