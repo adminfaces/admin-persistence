@@ -84,7 +84,7 @@ Of cource you can override them in your pom.xml as needed.
 
 === JPA Metamodel 
 
-As Admin Persistence uses https://deltaspike.apache.org/documentation/data.html#_jpa_criteria_api_support[DeltaSpike `typesafe criteria^] you'll need to generate JPA metamodel. There are various ways to do that, here is a maven plugin example:
+As Admin Persistence uses https://deltaspike.apache.org/documentation/data.html#_jpa_criteria_api_support[DeltaSpike `typesafe` criteria^] you'll need to generate JPA metamodel. There are various ways to do that, here is a maven plugin example:
 
 
 [source,xml]
