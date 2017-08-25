@@ -189,7 +189,7 @@ public class CarListMB extends CrudMB<Car> implements Serializable {
 
     @Inject
     public void initService() {
-       setCrudService(carService);
+       setCrudService(carService); <1>
     }
 
 }
@@ -261,6 +261,54 @@ protected Criteria<Car, Car> configRestrictions(Filter<Car> filter) {
 
 ----
 
+[NOTE]
+====
+`filter.param` is a hashmap to add arbitrary parameters and `filter.entity` for entity specific ones, see https://github.com/adminfaces/admin-starter-persistence/blob/499a5d738fff90b2d3e9934b2451b90d456575e7/src/main/webapp/car-list.xhtml#L144[search dialog^] which populates those attributes:
+
+[source,html]
+----
+   <div class="ui-g-12">
+                    <p:outputLabel for="model" value="#{msg['label.model']}"/>
+                    </div>
+                    <div class="ui-g-12">
+                        <p:selectOneMenu id="model" value="#{carListMB.filter.entity.model}">
+                            <f:selectItem itemLabel="Chose a model" itemValue=""/>
+                            <f:selectItems value="#{models}" var="m" itemLabel="#{m}"
+                                           itemValue="#{m}"/>
+                        </p:selectOneMenu>
+                    </div>
+                    <div class="ui-g-12">
+                        <p:outputLabel for="name" value="#{msg['label.name']}"/>
+                    </div>
+                    <div class="ui-g-12">
+                        <p:inputText id="name" value="#{carListMB.filter.entity.name}"/>
+                    </div>
+
+                    <div class="ui-g-6 ui-sm-12 ui-g-nopad">
+                        <div class="ui-g-12">
+                            <p:outputLabel for="min" value="#{msg['label.minPrice']}"/>
+                        </div>
+                        <div class="ui-g-12">
+                            <p:inputNumber id="min" value="#{carListMB.filter.params.minPrice}"/>
+                        </div>
+                    </div>
+
+                    <div class="ui-g-6 ui-sm-12 ui-g-nopad">
+                        <div class="ui-g-12">
+                            <p:outputLabel for="max" value="#{msg['label.maxPrice']}"/>
+                        </div>
+                        <div class="ui-g-12">
+                            <p:inputNumber id="max" value="#{carListMB.filter.params.maxPrice}"/>
+                        </div>
+                    </div>
+                </div>
+----
+
+====
+
+IMPORTANT: Any datatable update (ajax or note) will trigger the configRestrictions.
+
+NOTE: Besides filtering the `filter` helper class also holds *pagination* and *sort* information.
 
 == Snapshots
 
