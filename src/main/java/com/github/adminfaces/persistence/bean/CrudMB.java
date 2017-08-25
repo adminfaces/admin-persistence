@@ -1,7 +1,7 @@
 package com.github.adminfaces.persistence.bean;
 
-import com.github.adminfaces.persistence.model.BaseEntity;
 import com.github.adminfaces.persistence.model.Filter;
+import com.github.adminfaces.persistence.model.PersistenceEntity;
 import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.util.Messages;
 import com.github.adminfaces.persistence.util.SessionFilter;
@@ -21,7 +21,7 @@ import java.util.Map;
 import static com.github.adminfaces.persistence.util.Messages.addDetailMessage;
 import static com.github.adminfaces.template.util.Assert.has;
 
-public abstract class CrudMB<T extends BaseEntity> {
+public abstract class CrudMB<T extends PersistenceEntity> {
 
     protected final Logger LOG = LoggerFactory.getLogger(getClass().getName());
 

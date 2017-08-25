@@ -1,7 +1,7 @@
 package com.github.adminfaces.persistence.service;
 
-import com.github.adminfaces.persistence.model.BaseEntity;
 import com.github.adminfaces.persistence.model.Filter;
+import com.github.adminfaces.persistence.model.PersistenceEntity;
 import com.github.adminfaces.persistence.model.SortOrder;
 import com.github.adminfaces.template.exception.BusinessException;
 import org.apache.deltaspike.data.api.criteria.Criteria;
@@ -23,7 +23,7 @@ import java.util.List;
  * Utility service for crud
  */
 @Service
-public class CrudService<T extends BaseEntity, PK extends Serializable> extends CriteriaSupportHandler<T> implements CriteriaSupport<T>, Serializable {
+public class CrudService<T extends PersistenceEntity, PK extends Serializable> extends CriteriaSupportHandler<T> implements CriteriaSupport<T>, Serializable {
 
     protected Class<T> entityClass;
 

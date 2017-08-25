@@ -10,10 +10,11 @@ import java.io.Serializable;
  *
  * @author rmpestano
  */
-public abstract class BaseEntity implements Serializable {
+public abstract class BaseEntity implements PersistenceEntity {
 
 
     public abstract <ID extends Serializable> ID getId();
+
 
     @Override
     public int hashCode() {
