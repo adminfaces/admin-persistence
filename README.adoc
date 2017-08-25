@@ -303,7 +303,7 @@ protected Criteria<Car, Car> configRestrictions(Filter<Car> filter) {
 
 ====
 
-IMPORTANT: Any datatable update (ajax or note) will trigger the configRestrictions.
+IMPORTANT: Any datatable update (ajax or not) will trigger the configRestrictions.
 
 NOTE: Besides filtering the `filter` helper class also holds *pagination* and *sort* information.
 
