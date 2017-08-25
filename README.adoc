@@ -198,7 +198,7 @@ TIP: Full source code for CarListMB can be https://github.com/adminfaces/admin-s
 
 == Pagination
 
-Real pagination involves lots of boilerplate code, in admin-persistence it is a matter of using a Primefaces lazy datatable and bind it to a CrudMB list:
+Real pagination involves lots of boilerplate code, in admin-persistence it is a matter of using a Primefaces lazy datatable and bind it the CrudMB `list` variable:
 
 
 .xhtml page
