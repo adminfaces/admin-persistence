@@ -264,40 +264,40 @@ protected Criteria<Car, Car> configRestrictions(Filter<Car> filter) {
 [source,html]
 ----
    <div class="ui-g-12">
-                    <p:outputLabel for="model" value="#{msg['label.model']}"/>
-                    </div>
-                    <div class="ui-g-12">
-                        <p:selectOneMenu id="model" value="#{carListMB.filter.entity.model}">
-                            <f:selectItem itemLabel="Chose a model" itemValue=""/>
-                            <f:selectItems value="#{models}" var="m" itemLabel="#{m}"
-                                           itemValue="#{m}"/>
-                        </p:selectOneMenu>
-                    </div>
-                    <div class="ui-g-12">
-                        <p:outputLabel for="name" value="#{msg['label.name']}"/>
-                    </div>
-                    <div class="ui-g-12">
-                        <p:inputText id="name" value="#{carListMB.filter.entity.name}"/>
-                    </div>
+        <p:outputLabel for="model" value="#{msg['label.model']}"/>
+        </div>
+        <div class="ui-g-12">
+            <p:selectOneMenu id="model" value="#{carListMB.filter.entity.model}">
+                <f:selectItem itemLabel="Chose a model" itemValue=""/>
+                <f:selectItems value="#{models}" var="m" itemLabel="#{m}"
+                               itemValue="#{m}"/>
+            </p:selectOneMenu>
+        </div>
+        <div class="ui-g-12">
+            <p:outputLabel for="name" value="#{msg['label.name']}"/>
+        </div>
+        <div class="ui-g-12">
+            <p:inputText id="name" value="#{carListMB.filter.entity.name}"/>
+        </div>
 
-                    <div class="ui-g-6 ui-sm-12 ui-g-nopad">
-                        <div class="ui-g-12">
-                            <p:outputLabel for="min" value="#{msg['label.minPrice']}"/>
-                        </div>
-                        <div class="ui-g-12">
-                            <p:inputNumber id="min" value="#{carListMB.filter.params.minPrice}"/>
-                        </div>
-                    </div>
+        <div class="ui-g-6 ui-sm-12 ui-g-nopad">
+            <div class="ui-g-12">
+                <p:outputLabel for="min" value="#{msg['label.minPrice']}"/>
+            </div>
+            <div class="ui-g-12">
+                <p:inputNumber id="min" value="#{carListMB.filter.params.minPrice}"/>
+            </div>
+        </div>
 
-                    <div class="ui-g-6 ui-sm-12 ui-g-nopad">
-                        <div class="ui-g-12">
-                            <p:outputLabel for="max" value="#{msg['label.maxPrice']}"/>
-                        </div>
-                        <div class="ui-g-12">
-                            <p:inputNumber id="max" value="#{carListMB.filter.params.maxPrice}"/>
-                        </div>
-                    </div>
-                </div>
+        <div class="ui-g-6 ui-sm-12 ui-g-nopad">
+            <div class="ui-g-12">
+                <p:outputLabel for="max" value="#{msg['label.maxPrice']}"/>
+            </div>
+            <div class="ui-g-12">
+                <p:inputNumber id="max" value="#{carListMB.filter.params.maxPrice}"/>
+            </div>
+        </div>
+    </div>
 ----
 
 ====
