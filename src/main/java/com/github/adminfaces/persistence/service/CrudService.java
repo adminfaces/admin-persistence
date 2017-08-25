@@ -2,7 +2,7 @@ package com.github.adminfaces.persistence.service;
 
 import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
-import com.github.adminfaces.persistence.model.SortOrder;
+import com.github.adminfaces.persistence.model.AdminSort;
 import com.github.adminfaces.template.exception.BusinessException;
 import org.apache.deltaspike.data.api.criteria.Criteria;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
@@ -64,10 +64,10 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         String sortField = filter.getSortField();
         if (sortField != null) {
             SingularAttribute sortAttribute = entityManager.getMetamodel().entity(entityClass).getSingularAttribute(sortField);
-            if (filter.getSortOrder().equals(SortOrder.UNSORTED)) {
-                filter.setSortOrder(SortOrder.ASCENDING);
+            if (filter.getAdminSort().equals(AdminSort.UNSORTED)) {
+                filter.setAdminSort(AdminSort.ASCENDING);
             }
-            if (filter.getSortOrder().equals(SortOrder.ASCENDING)) {
+            if (filter.getAdminSort().equals(AdminSort.ASCENDING)) {
                 criteria.orderAsc(sortAttribute);
             } else {
                 criteria.orderDesc(sortAttribute);

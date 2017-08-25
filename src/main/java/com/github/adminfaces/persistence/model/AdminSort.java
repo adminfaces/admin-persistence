@@ -1,9 +1,9 @@
 package com.github.adminfaces.persistence.model;
 
 /**
- * Created by rmpestano on 10/31/14.
+ * Created by rmpestano
  */
-public enum SortOrder {
+public enum AdminSort {
 
     ASCENDING, DESCENDING, UNSORTED;
 

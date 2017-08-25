@@ -3,11 +3,10 @@ package com.github.adminfaces.persistence.bean;
 import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
 import com.github.adminfaces.persistence.service.CrudService;
+import com.github.adminfaces.persistence.util.AdminDataModel;
 import com.github.adminfaces.persistence.util.Messages;
 import com.github.adminfaces.persistence.util.SessionFilter;
 import org.omnifaces.util.Faces;
-import org.primefaces.model.LazyDataModel;
-import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +15,6 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
-import java.util.Map;
 
 import static com.github.adminfaces.persistence.util.Messages.addDetailMessage;
 import static com.github.adminfaces.template.util.Assert.has;
@@ -33,7 +31,7 @@ public abstract class CrudMB<T extends PersistenceEntity> {
 
     protected Filter<T> filter;
 
-    protected LazyDataModel<T> list; //datatable pagination
+    protected AdminDataModel<T> list; //datatable pagination
 
     protected List<T> selectionList; //holds selected rows in datatable with multiple selection (checkbox column)
 
@@ -65,51 +63,7 @@ public abstract class CrudMB<T extends PersistenceEntity> {
 
         filter = initFilter();
 
-        list = initList();
-    }
-
-    protected LazyDataModel<T> initList() {
-        return new LazyDataModel<T>() {
-
-            @Override
-            public List<T> load(int first, int pageSize,
-                                String sortField, SortOrder sortOrder,
-                                Map<String, Object> filters) {
-                com.github.adminfaces.persistence.model.SortOrder order = null;
-                if (sortOrder != null) {
-                    order = sortOrder.equals(SortOrder.ASCENDING) ? com.github.adminfaces.persistence.model.SortOrder.ASCENDING
-                            : sortOrder.equals(SortOrder.DESCENDING) ? com.github.adminfaces.persistence.model.SortOrder.DESCENDING
-                            : com.github.adminfaces.persistence.model.SortOrder.UNSORTED;
-                }
-
-                if (filters == null || filters.isEmpty() && keepFiltersInSession()) {
-                    filters = filter.getParams();
-                }
-
-                filter.setFirst(first).setPageSize(pageSize)
-                        .setSortField(sortField).setSortOrder(order)
-                        .setParams(filters);
-                List<T> list = crudService.paginate(filter);
-                setRowCount((int) crudService.count(filter));
-                return list;
-            }
-
-            @Override
-            public int getRowCount() {
-                return super.getRowCount();
-            }
-
-            @Override
-            public T getRowData(String key) {
-                List<T> list = (List<T>) this.getWrappedData();
-                for (T t : list) {
-                    if (key.equals(t.getId().toString())) {
-                        return t;
-                    }
-                }
-                return null;
-            }
-        };
+        list = new AdminDataModel<T>(crudService, filter);
     }
 
 
@@ -126,10 +80,11 @@ public abstract class CrudMB<T extends PersistenceEntity> {
     protected Filter<T> initFilter() {
         Filter<T> filter;
         if (keepFiltersInSession()) {
-            filter = (Filter<T>) sessionFilter.get(getClass());
+            String sessionFilterKey = getClass().getName();
+            filter = (Filter<T>) sessionFilter.get(sessionFilterKey);
             if (filter == null) {
                 filter = createDefaultFilters();
-                sessionFilter.add(getClass(), filter);
+                sessionFilter.add(sessionFilterKey, filter);
             }
         } else {
             filter = createDefaultFilters();
@@ -173,11 +128,11 @@ public abstract class CrudMB<T extends PersistenceEntity> {
         this.crudService = crudService;
     }
 
-    public LazyDataModel<T> getList() {
+    public AdminDataModel<T> getList() {
         return list;
     }
 
-    public void setList(LazyDataModel<T> list) {
+    public void setList(AdminDataModel<T> list) {
         this.list = list;
     }
 
@@ -280,9 +235,10 @@ public abstract class CrudMB<T extends PersistenceEntity> {
 
     public void clear() {
         if (keepFiltersInSession()) {
-            sessionFilter.clear(getClass());
+            sessionFilter.clear(getClass().getName());
         }
         filter = initFilter();
+        list.setFilter(filter);
         entity = initEntity();
         id = null;
     }
@@ -310,5 +266,6 @@ public abstract class CrudMB<T extends PersistenceEntity> {
     public void afterUpdate() {
 
     }
+
 
 }

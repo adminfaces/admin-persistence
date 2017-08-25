@@ -14,7 +14,7 @@ public class Filter<T extends Serializable> {
     private int first;
     private int pageSize;
     private String sortField;
-    private SortOrder sortOrder;
+    private AdminSort adminSort;
     private Map<String, Object> params = new HashMap<String, Object>();
 
 
@@ -52,13 +52,13 @@ public class Filter<T extends Serializable> {
         return sortField;
     }
 
-    public Filter setSortOrder(SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
+    public Filter setAdminSort(AdminSort adminSort) {
+        this.adminSort = adminSort;
         return this;
     }
 
-    public SortOrder getSortOrder() {
-        return sortOrder;
+    public AdminSort getAdminSort() {
+        return adminSort;
     }
 
     public Filter setParams(Map<String, Object> params) {
