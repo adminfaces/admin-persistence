@@ -220,7 +220,7 @@ public abstract class CrudMB<T extends PersistenceEntity> {
             afterInsert();
         } else {
             beforeUpdate();
-            crudService.update(entity);
+            entity = crudService.update(entity);
             addDetailMessage(getUpdateMessage());
             afterUpdate();
         }

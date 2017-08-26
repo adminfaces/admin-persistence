@@ -125,7 +125,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         }
     }
 
-    public void update(T entity) {
+    public T update(T entity) {
         if (entity == null) {
             throw new RuntimeException("Record cannot be null");
         }
@@ -134,9 +134,10 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
             throw new RuntimeException("Record cannot be transient");
         }
         beforeUpdate(entity);
-        entityManager.merge(entity);
+        entity = entityManager.merge(entity);
         entityManager.flush();
         afterUpdate(entity);
+        return entity;
     }
 
     public long count(Filter<T> filter) {
