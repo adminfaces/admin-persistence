@@ -135,6 +135,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         }
         beforeUpdate(entity);
         entityManager.merge(entity);
+        entityManager.flush();
         afterUpdate(entity);
     }
 
