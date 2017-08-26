@@ -1,12 +1,12 @@
 package com.github.adminfaces.persistence.util;
 
-import org.omnifaces.util.Faces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -21,7 +21,7 @@ public class Messages {
     @PostConstruct
     public void init() {
         try {
-            bundle = ResourceBundle.getBundle("messages", Faces.getLocale());
+            bundle = ResourceBundle.getBundle("messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         }catch (MissingResourceException e) {
             LOG.warn("Application resource bundle named 'messages' not found.");
         }
@@ -46,11 +46,11 @@ public class Messages {
 
     public static void addDetailMessage(String message, FacesMessage.Severity severity) {
 
-        FacesMessage facesMessage = org.omnifaces.util.Messages.create("").detail(message).get();
+        FacesMessage facesMessage = new FacesMessage("",message);
         if (severity != null && severity != FacesMessage.SEVERITY_INFO) {
             facesMessage.setSeverity(severity);
-        } else {
-            org.omnifaces.util.Messages.add(null, facesMessage);
         }
+
+        FacesContext.getCurrentInstance().addMessage(null,facesMessage);
     }
 }

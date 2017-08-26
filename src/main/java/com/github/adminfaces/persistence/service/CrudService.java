@@ -3,7 +3,6 @@ package com.github.adminfaces.persistence.service;
 import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
 import com.github.adminfaces.persistence.model.AdminSort;
-import com.github.adminfaces.template.exception.BusinessException;
 import org.apache.deltaspike.data.api.criteria.Criteria;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 import org.apache.deltaspike.data.impl.handler.CriteriaSupportHandler;
@@ -92,11 +91,11 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     public void insert(T entity) {
         if (entity == null) {
-            throw new BusinessException("Record cannot be null");
+            throw new RuntimeException("Record cannot be null");
         }
 
         if (entity.getId() != null) {
-            throw new BusinessException("Record must be transient");
+            throw new RuntimeException("Record must be transient");
         }
         beforeInsert(entity);
         entityManager.persist(entity);
@@ -105,11 +104,11 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     public void remove(T entity) {
         if (entity == null) {
-            throw new BusinessException("Record cannot be null");
+            throw new RuntimeException("Record cannot be null");
         }
 
         if (entity.getId() == null) {
-            throw new BusinessException("Record cannot be transient");
+            throw new RuntimeException("Record cannot be transient");
         }
         beforeRemove(entity);
         entityManager.remove(entityManager.find(entityClass, entity.getId()));
@@ -119,7 +118,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     public void remove(List<T> entities) {
         if (entities == null) {
-            throw new BusinessException("Entities cannot be null");
+            throw new RuntimeException("Entities cannot be null");
         }
         for (T t : entities) {
             this.remove(t);
@@ -128,11 +127,11 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     public void update(T entity) {
         if (entity == null) {
-            throw new BusinessException("Record cannot be null");
+            throw new RuntimeException("Record cannot be null");
         }
 
         if (entity.getId() == null) {
-            throw new BusinessException("Record cannot be transient");
+            throw new RuntimeException("Record cannot be transient");
         }
         beforeUpdate(entity);
         entityManager.merge(entity);
@@ -149,7 +148,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     public T findById(Serializable id) {
         T entity = entityManager.find(entityClass, id);
         if (entity == null) {
-            throw new BusinessException(String.format("Record with id %s not found.", id));
+            throw new RuntimeException(String.format("Record with id %s not found.", id));
         }
         return entity;
     }

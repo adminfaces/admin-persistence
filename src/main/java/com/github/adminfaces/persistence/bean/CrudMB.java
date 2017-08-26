@@ -6,18 +6,17 @@ import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.util.AdminDataModel;
 import com.github.adminfaces.persistence.util.Messages;
 import com.github.adminfaces.persistence.util.SessionFilter;
-import org.omnifaces.util.Faces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import static com.github.adminfaces.persistence.util.Messages.addDetailMessage;
-import static com.github.adminfaces.template.util.Assert.has;
 
 public abstract class CrudMB<T extends PersistenceEntity> {
 
@@ -25,11 +24,11 @@ public abstract class CrudMB<T extends PersistenceEntity> {
 
     private CrudService<T, ?> crudService;
 
-    protected T entity;
+    protected T entity; //entity to crud
 
-    protected Serializable id;
+    protected Serializable id; //used as view param in GET based navigation
 
-    protected Filter<T> filter;
+    protected Filter<T> filter; //used for search parameters
 
     protected AdminDataModel<T> list; //datatable pagination
 
@@ -69,10 +68,10 @@ public abstract class CrudMB<T extends PersistenceEntity> {
 
     //called via preRenderView or viewAction
     public void init() {
-        if (Faces.isAjaxRequest()) {
+        if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
             return;
         }
-        if (has(id)) {
+        if (id == null || "".equals(id)) {
             entity = crudService.findById(id);
         }
     }
