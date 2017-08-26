@@ -72,7 +72,7 @@ public abstract class CrudMB<T extends PersistenceEntity> {
             return;
         }
 
-        if (id != null || !"".equals(id)) {
+        if (id != null && !"".equals(id)) {
             entity = crudService.findById(id);
         }
     }
