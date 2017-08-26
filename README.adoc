@@ -17,7 +17,7 @@
 image:https://maven-badges.herokuapp.com/maven-central/com.github.adminfaces/admin-persistence/badge.svg["Maven Central",link="http://search.maven.org/#search|ga|1|admin-persistence"]
 image:https://badges.gitter.im/Join%20Chat.svg[link="https://gitter.im/adminfaces?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 
-CRUD operations like a breeze for https://github.com/adminfaces[AdminFaces applications^] based on Apache DeltaSpike Data module.
+CRUD operations like a breeze for https://github.com/adminfaces[AdminFaces applications^] based on https://deltaspike.apache.org/[Apache DeltaSpike^] Data module.
 
 
 == Usage
@@ -316,6 +316,9 @@ You can change this behavior by overriding  keepFiltersInSession method on you B
 
 ====
 
+== Sample application
+
+For an example project using Admin Persistence https://github.com/adminfaces/admin-starter-persistence[see admin-starter-persistence^].
 
 == Snapshots
 
