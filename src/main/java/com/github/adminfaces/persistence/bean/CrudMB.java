@@ -71,7 +71,7 @@ public abstract class CrudMB<T extends PersistenceEntity> {
         if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
             return;
         }
-        if (id == null || "".equals(id)) {
+        if (id != null || !"".equals(id)) {
             entity = crudService.findById(id);
         }
     }
