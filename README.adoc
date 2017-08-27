@@ -28,11 +28,11 @@ This module depends on `JSF`, `CDI` and `JPA` and was tested with respective imp
 
 |JSF | CDI | JPA
 
-|Mojarra 2.2, Weld 2.3, Hibernate 5.0
+|Mojarra 2.2| Weld 2.3| Hibernate 5.0
 
-|Mojarra 2.2, Weld 2.2, Hibernate 4.3
+|Mojarra 2.2| Weld 2.2| Hibernate 4.3
 
-|MyFaces 2.1, OpenWebBeans 1.7.4, Eclipselink 2.6
+|MyFaces 2.1| OpenWebBeans 1.7.4| Eclipselink 2.6
 
 |===
 
