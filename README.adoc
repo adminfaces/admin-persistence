@@ -19,6 +19,24 @@ image:https://badges.gitter.im/Join%20Chat.svg[link="https://gitter.im/adminface
 
 CRUD operations like a breeze for https://github.com/adminfaces[AdminFaces applications^] based on https://deltaspike.apache.org/[Apache DeltaSpike^] Data module.
 
+== Prerequisites
+
+This module depends on `JSF`, `CDI` and `JPA` and was tested with respective implementations and versions:
+
+
+|===
+
+|JSF | CDI | JPA
+
+|Mojarra 2.2, Weld 2.3, Hibernate 5.0
+
+|Mojarra 2.2, Weld 2.2, Hibernate 4.3
+
+|MyFaces 2.1, OpenWebBeans 1.7.4, Eclipselink 2.6
+
+|===
+
+
 
 == Usage
 
@@ -303,7 +321,7 @@ NOTE: Besides filtering the `filter` helper class also holds *pagination* and *s
 
 By default filters are saved on `Session` so when user goes to another page (e.g a detail) and comes back to list the tables keeps it's previous filters.
 
-You can change this behavior by overriding  keepFiltersInSession method on you Bean:
+You can change this behavior by overriding  keepFiltersInSession method on your Bean:
 
 .CarListMB
 [source,java]
