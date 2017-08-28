@@ -40,11 +40,12 @@ This module depends on `JSF`, `CDI` and `JPA` and was tested with respective imp
 
 == Usage
 
-=== Classpath
+Following are the steps you need to follow in order to use `Admin Persistence`:
 
+.*Classpath*
++
 First include it in your classpath:
-
-
++
 ----
 <dependency>
     <groupId>com.github.adminfaces</groupId>
@@ -52,7 +53,7 @@ First include it in your classpath:
     <version>version</version>
 </dependency>
 ----
-
++
 [IMPORTANT]
 ======
 Admin persistence will bring the following transitive dependencies:
@@ -94,11 +95,10 @@ Admin persistence will bring the following transitive dependencies:
 Of cource you can override them in your pom.xml as needed.
 ======
 
-=== JPA Metamodel 
-
+. *JPA Metamodel*
++
 As Admin Persistence uses https://deltaspike.apache.org/documentation/data.html#_jpa_criteria_api_support[DeltaSpike `typesafe` criteria^] you'll need to generate JPA metamodel. There are various ways to do that, here is a maven plugin example:
-
-
++
 [source,xml]
 ----
 <plugin>
@@ -126,13 +126,13 @@ As Admin Persistence uses https://deltaspike.apache.org/documentation/data.html#
     </dependencies>
 </plugin>
 ----
-
++
 TIP: See https://docs.jboss.org/hibernate/orm/5.0/topical/html/metamodelgen/MetamodelGenerator.html#_usage_within_the_ide[this tutorial^] for configuring it on your IDE.
 
-
-And expose an `entity manager` via CDI producer:
-
-
+. *Entity Manager*
++
+Admin persistence needs an exposed `entity manager` as CDI Bean, you can do that using a CDI producer:
++
 [source,java]
 ----
 @ApplicationScoped
@@ -146,29 +146,32 @@ public class EntityManagerProducer {
         return em;
     }
 }
-
 ----
 
-Extend `BaseEntity` (or implement `PersistenceEntity` interface) on your JPA entities:
-
+. *Base Entity*
++
+Every JPA entity must be typed as a *PersistentEntity*, it is an interface with only a method, `getId()`:
++
 [source,java]
 ----
-import com.github.adminfaces.persistence.model.BaseEntity;
+import com.github.adminfaces.persistence.model.PersistenceEntity;
 
 @Entity
 @Table(name = "car")
-public class Car extends BaseEntity {
+public class Car implements PersistenceEntity {
 
-public Integer getId() { <1>
+public Integer getId() {
         return id;
     }
 
 }
 ----
-<1> You only need to implement a `getId()` which returns the entity primary key.
++
+TIP: You can `extend` *BaseEntity* to gain `equals()`,`hashCode()` and `toString().
 
-Create a service which will hold your business logic and extend CrudService:
-
+. *Service layer*
+Now to create a service which will hold your business logic you need to extend *CrudService*:
++
 [source,java]
 ----
 @Stateless
@@ -179,8 +182,9 @@ public class CarService extends CrudService<Car, Integer>  {
 
 TIP: Full source code for CarService can be https://github.com/adminfaces/admin-starter-persistence/blob/master/src/main/java/com/github/adminfaces/starter/service/CarService.java#L24[found here^].
 
-Extend CrudMB and provide your service to your JSF managed beans to enable CRUD support out of the box:
-
+. *Controller*
+Now on the controller layer (JSF managede beans) you have to extend *CrudMB* and provide your service to JSF managed beans and then enable CRUD support out of the box:
++
 [source,java]
 ----
 @Named
@@ -202,7 +206,7 @@ public class CarListMB extends CrudMB<Car> implements Serializable {
 }
 ----
 <1> Needed by CrudMB otherwise it will throw an exception asking for CrudService initialization.
-
++
 TIP: Full source code for CarListMB can be https://github.com/adminfaces/admin-starter-persistence/blob/master/src/main/java/com/github/adminfaces/starter/bean/CarListMB.java#L24[found here^].
 
 
