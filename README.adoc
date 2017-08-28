@@ -167,7 +167,7 @@ public Integer getId() {
 }
 ----
 +
-TIP: You can `extend` *BaseEntity* to gain `equals()`,`hashCode()` and `toString().
+TIP: You can `extend` *BaseEntity* to gain `equals()`,`hashCode()` and `toString()`.
 
 . *Service layer*
 +
@@ -185,7 +185,7 @@ TIP: Full source code for CarService can be https://github.com/adminfaces/admin-
 
 . *Controller*
 +
-Now on the controller layer (JSF managede beans) you have to extend *CrudMB* and provide your service to JSF managed beans and then enable CRUD support out of the box:
+Finally on the controller layer (JSF managed beans) you need to extend *CrudMB* then enable CRUD support out of the box:
 +
 [source,java]
 ----
