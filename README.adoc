@@ -170,6 +170,7 @@ public Integer getId() {
 TIP: You can `extend` *BaseEntity* to gain `equals()`,`hashCode()` and `toString().
 
 . *Service layer*
++
 Now to create a service which will hold your business logic you need to extend *CrudService*:
 +
 [source,java]
