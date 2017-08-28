@@ -179,7 +179,7 @@ public class CarService extends CrudService<Car, Integer>  {
 
 }
 ----
-
++
 TIP: Full source code for CarService can be https://github.com/adminfaces/admin-starter-persistence/blob/master/src/main/java/com/github/adminfaces/starter/service/CarService.java#L24[found here^].
 
 . *Controller*
