@@ -232,7 +232,7 @@ TIP: Full source code for this xhtml page can be https://github.com/adminfaces/a
 
 == Pagination filtering
 
-For restricting database pages in the lazy datatable you just need to override `configRestrictions` method in the managed bean's service (the service we set with *setCrudService* in CarListMB) and add your restrictions based on a filter:
+For filtering on the lazy datatable you just need to override `configRestrictions` method in the managed bean's service (the service we set with *setCrudService* in CarListMB) and add your restrictions based on a filter:
 
 .CarService
 [source,java]
