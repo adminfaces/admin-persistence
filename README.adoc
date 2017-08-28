@@ -131,7 +131,7 @@ TIP: See https://docs.jboss.org/hibernate/orm/5.0/topical/html/metamodelgen/Meta
 
 . *Entity Manager*
 +
-Admin persistence needs an exposed `entity manager` as CDI Bean, you can do that using a CDI producer:
+Admin persistence needs an exposed `entity manager` as CDI Bean, you can do that by using a CDI producer:
 +
 [source,java]
 ----
