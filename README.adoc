@@ -148,9 +148,9 @@ public class EntityManagerProducer {
 }
 ----
 
-. *Base Entity*
+. *Persistence Entity*
 +
-Every JPA entity must be typed as a *PersistentEntity*, it is an interface with only a method, `getId()`:
+Every JPA entity must be typed as a *PersistenceEntity*, it is an interface with only a method, `getId()`:
 +
 [source,java]
 ----
