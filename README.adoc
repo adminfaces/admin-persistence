@@ -160,6 +160,7 @@ import com.github.adminfaces.persistence.model.PersistenceEntity;
 @Table(name = "car")
 public class Car implements PersistenceEntity {
 
+@Override
 public Integer getId() {
         return id;
     }
