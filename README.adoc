@@ -186,7 +186,7 @@ TIP: Full source code for CarService can be https://github.com/adminfaces/admin-
 
 . *Controller*
 +
-Finally on the controller layer (JSF managed beans) you need to extend *CrudMB* then enable CRUD support out of the box:
+Finally on the controller layer (JSF managed beans) you need to extend *CrudMB* which will enable CRUD support for your JSF pages:
 +
 [source,java]
 ----
