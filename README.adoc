@@ -42,7 +42,7 @@ This module depends on `JSF`, `CDI` and `JPA` and was tested with respective imp
 
 Following are the steps you need to follow in order to use `Admin Persistence`:
 
-.*Classpath*
+. *Classpath*
 +
 First include it in your classpath:
 +
