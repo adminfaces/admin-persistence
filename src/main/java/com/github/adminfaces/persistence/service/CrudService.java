@@ -12,17 +12,20 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author rmpestano
- *
- * Utility service for crud
+ * Utility service for crud operations
  */
 @Service
 public class CrudService<T extends PersistenceEntity, PK extends Serializable> extends CriteriaSupportHandler<T> implements CriteriaSupport<T>, Serializable {
+
+    private static final Logger LOG = Logger.getLogger(CrudService.class.getName());
 
     protected Class<T> entityClass;
 
@@ -81,6 +84,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     /**
      * Called before pagination, should be overriden. By default there is no restrictions.
+     *
      * @param filter used to create restrictions
      * @return a criteria with configured restrictions
      */
@@ -140,10 +144,38 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         return entity;
     }
 
+    /**
+     * Count all
+     */
+    public long count() {
+        SingularAttribute<? super T, PK> id = entityManager.getMetamodel().entity(entityClass).getId(entityKey);
+        return criteria()
+                .select(Long.class, count(id))
+                .getSingleResult();
+    }
+
+    /**
+     * Count by filter using configRestrictions to count
+     *
+     * @param filter
+     * @return
+     */
     public long count(Filter<T> filter) {
         SingularAttribute<? super T, PK> id = entityManager.getMetamodel().entity(entityClass).getId(entityKey);
         return configRestrictions(filter)
                 .select(Long.class, count(id))
+                .getSingleResult();
+    }
+
+    /**
+     * Count using a pre populated criteria
+     *
+     * @param criteria
+     * @return
+     */
+    public long count(Criteria<T, T> criteria) {
+        SingularAttribute<? super T, PK> id = getEntityManager().getMetamodel().entity(entityClass).getId(entityKey);
+        return criteria.select(Long.class, count(id))
                 .getSingleResult();
     }
 
@@ -153,6 +185,119 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
             throw new RuntimeException(String.format("Record with id %s not found.", id));
         }
         return entity;
+    }
+
+
+    /**
+     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restrction will be added.
+     * @return  A criteria restricted by example using 'eq' for comparing attributes
+     */
+    public Criteria example(T example, SingularAttribute<T, ?>... usingAttributes) {
+        Criteria criteria = criteria();
+
+        for (SingularAttribute<T, ?> attribute : usingAttributes) {
+            if (attribute.getJavaMember() instanceof Field) {
+                Field field = (Field) attribute.getJavaMember();
+                field.setAccessible(true);
+                try {
+
+                    Object value = field.get(example);
+                    if(value != null) {
+                        LOG.fine(String.format("Adding restriction by example on attribute %s using value %s.", attribute.getName(), value));
+                        criteria.eq(attribute, value);
+                    }
+                } catch (IllegalAccessException e) {
+                    LOG.warning(String.format("Could not get value from field %s of entity %s.", field.getName(), example.getClass().getName()));
+                }
+            }
+        }
+        return criteria;
+    }
+
+    /**
+     * @param criteria a pre populated criteria
+     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restrction will be added.
+     *
+     * @return A criteria restricted by example using 'eq' for comparing attributes
+     */
+    public Criteria example(Criteria criteria, T example, SingularAttribute<T, ?>... usingAttributes) {
+
+        for (SingularAttribute<T, ?> attribute : usingAttributes) {
+            if (attribute.getJavaMember() instanceof Field) {
+                Field field = (Field) attribute.getJavaMember();
+                field.setAccessible(true);
+                try {
+
+                    Object value = field.get(example);
+                    if(value != null) {
+                        LOG.fine(String.format("Adding restriction by example on attribute %s using value %s.", attribute.getName(), value));
+                        criteria.eq(attribute, value);
+                    }
+                } catch (IllegalAccessException e) {
+                    LOG.warning(String.format("Could not get value from field %s of entity %s.", field.getName(), example.getClass().getName()));
+                }
+            }
+        }
+        return criteria;
+    }
+
+
+     /**
+     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restrction will be added.
+     *
+     * @return A criteria restricted by example using 'likeIgnoreCase' for comparing attributes
+     */
+    public Criteria exampleLike(T example, SingularAttribute<T, ?>... usingAttributes) {
+        Criteria criteria = criteria();
+
+        for (SingularAttribute<T, ?> attribute : usingAttributes) {
+            if (attribute.getJavaMember() instanceof Field) {
+                Field field = (Field) attribute.getJavaMember();
+                field.setAccessible(true);
+                try {
+
+                    Object value = field.get(example);
+                    if(value != null) {
+                        LOG.fine(String.format("Adding restriction by example on attribute %s using value %s.",attribute.getName(),value));
+                        criteria.likeIgnoreCase(attribute, value.toString());
+                    }
+                } catch (IllegalAccessException e) {
+                    LOG.warning(String.format("Could not get value from field %s of entity %s.", field.getName(), example.getClass().getName()));
+                }
+            }
+        }
+        return criteria;
+    }
+
+    /**
+     * @param criteria a pre populated criteria
+     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restrction will be added.
+     *
+     * @return A criteria restricted by example using 'likeIgnoreCase' for comparing attributes
+     */
+    public Criteria exampleLike(Criteria criteria, T example, SingularAttribute<T, ?>... usingAttributes) {
+
+        for (SingularAttribute<T, ?> attribute : usingAttributes) {
+            if (attribute.getJavaMember() instanceof Field) {
+                Field field = (Field) attribute.getJavaMember();
+                field.setAccessible(true);
+                try {
+
+                    Object value = field.get(example);
+                    if(value != null) {
+                        LOG.fine(String.format("Adding restriction by example on attribute %s using value %s.",attribute.getName(),value));
+                        criteria.likeIgnoreCase(attribute, value.toString());
+                    }
+                } catch (IllegalAccessException e) {
+                    LOG.warning(String.format("Could not get value from field %s of entity %s.", field.getName(), example.getClass().getName()));
+                }
+            }
+        }
+        return criteria;
     }
 
     public Class<PK> getEntityKey() {
