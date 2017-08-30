@@ -17,7 +17,7 @@
     <url>https://github.com/adminfaces/admin-persistence</url>
 
     <description>
-        Provides CRUD utilities for AdminFaces based applications.
+        Provides CRUD utilities for CDI, JPA and JSF based applications.
     </description>
 
     <developers>
