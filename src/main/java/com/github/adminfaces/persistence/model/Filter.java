@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by rmpestano on 9/7/14.
  * class which holds database pagination metadata
  */
-public class Filter<T extends Serializable> {
+public class Filter<T extends PersistenceEntity> {
     private T entity;
     private int first;
     private int pageSize;
