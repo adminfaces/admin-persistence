@@ -209,7 +209,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
 
     /**
-     * @param example         An entity whose attribute's value will be used for creating a criteria
+     * @param example An entity whose attribute's value will be used for creating a criteria
      * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
      * @return A criteria restricted by example using 'eq' for comparing attributes
      */
@@ -219,7 +219,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     /**
      * @param criteria a criteria to add restrictions based on the example entity.
-     * @param example         An entity whose attribute's value will be used for creating a criteria
+     * @param example An entity whose attribute's value will be used for creating a criteria
      * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
      *
      * @return A criteria restricted by example using 'eq' for comparing attributes
@@ -249,7 +249,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
 
     /**
-     * @param example         An entity whose attribute's value will be used for creating a criteria
+     * @param example An entity whose attribute's value will be used for creating a criteria
      * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
      *
      * @return A criteria restricted by example using 'likeIgnoreCase' for comparing attributes
@@ -288,7 +288,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
 
     /**
-     * @param example         An entity whose attribute's value will be used for creating a criteria
+     * @param example An entity whose attribute's value will be used for creating a criteria
      * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
      *
      * @return A criteria restricted by example using 'in' for comparing each element of list attributes
