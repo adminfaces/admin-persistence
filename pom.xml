@@ -272,6 +272,10 @@
                                 <exclude>**/*Brand*</exclude>
                                 <exclude>**/*SalesPoint*</exclude>
                                 <exclude>**/*AdminIt*</exclude>
+                                <exclude>**/*CrudMB*</exclude>
+                                <exclude>**/*AdminDataModel*</exclude>
+                                <exclude>**/*SessionFilter*</exclude>
+                                <exclude>**/*EntityConverter*</exclude>
                             </excludes>
                         </configuration>
 
