@@ -115,7 +115,7 @@
         <dependency>
             <groupId>com.github.database-rider</groupId>
             <artifactId>rider-cdi</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -186,7 +186,7 @@
                         <phase>generate-test-sources</phase>
                     </execution>
                 </executions>
-                <configuration>
+               <configuration>
                     <processors>
                         <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
                     </processors>

@@ -1,9 +1,6 @@
 package com.github.adminfaces.persistence;
 
-import com.github.adminfaces.persistence.model.AdminSort;
-import com.github.adminfaces.persistence.model.Car;
-import com.github.adminfaces.persistence.model.Car_;
-import com.github.adminfaces.persistence.model.Filter;
+import com.github.adminfaces.persistence.model.*;
 import com.github.adminfaces.persistence.service.CarService;
 import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.service.Service;
@@ -14,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -22,7 +20,7 @@ import static org.junit.Assert.*;
 @RunWith(CdiTestRunner.class)
 @DBUnitInterceptor
 @DataSet(cleanBefore = true)
-public class AdminIt {
+public class CrudServiceIt {
 
     @Inject
     CarService carService;
@@ -30,6 +28,10 @@ public class AdminIt {
     @Inject
     @Service
     CrudService<Car, Integer> crudService;
+
+    @Inject
+    @Service
+    CrudService<SalesPoint, SalesPointPK> salesPointService;
 
 
     @Test
@@ -59,7 +61,6 @@ public class AdminIt {
     }
 
     @Test
-    @DataSet(cleanBefore = true)
     public void shouldNotInsertCarWithoutName() {
         long countBefore = carService.count();
         assertEquals(countBefore, 0);
@@ -96,7 +97,6 @@ public class AdminIt {
     }
 
     @Test
-    @DataSet(cleanBefore = true)
     public void shouldInsertCar() {
         long countBefore = carService.count();
         assertEquals(countBefore, 0);
@@ -247,4 +247,49 @@ public class AdminIt {
     public void shoulGetTotalPriceByModel() {
         assertEquals((Double) 20380.53, carService.getTotalPriceByModel(new Car().model("%porche%")));
     }
+
+    @Test
+    @DataSet("cars-full.yml")
+    public void shouldFindByCompositeKey() {
+        SalesPointPK pk = new SalesPointPK(1L,3L);
+        SalesPoint salesPoint = salesPointService.findById(pk);
+        assertThat(salesPoint).isNotNull().extracting("name")
+                .contains("Ford Motors2");
+    }
+
+     @Test
+    @DataSet("cars-full.yml")
+    public void shouldListCarsBySalesPoint() {
+        List<Car> carsFound = carService.findBySalesPoint(new SalesPoint(new SalesPointPK(2L, 1L)));
+        assertThat(carsFound).isNotNull().hasSize(1)
+                .extracting("name")
+                .contains("Sentra");
+    }
+
+    @Test
+    @DataSet("cars-full.yml")
+    public void shouldListCarsBySalesPointAddress() {
+        List<Car> carsFound = carService.findBySalesPointAddress("Nissan address");
+        assertThat(carsFound).isNotNull().hasSize(1)
+                .extracting("name")
+                .contains("Sentra");
+    }
+
+
+    @Test
+    @DataSet("cars-full.yml")
+    public void shouldListCarsBySalesPointAddressByExample() {
+        Car carExample = new Car();
+        SalesPoint salesPoint = new SalesPoint(new SalesPointPK(2L, 1L));
+        List<SalesPoint> salesPoints = new ArrayList<>();
+        salesPoints.add(salesPoint);
+        carExample.setSalesPoints(salesPoints);
+        List<Car> carsFound = carService.example(carExample,Car_.salesPoints).getResultList();
+           assertThat(carsFound).isNotNull().hasSize(1)
+                .extracting("name")
+                .contains("Sentra");
+    }
+
+
+
 }

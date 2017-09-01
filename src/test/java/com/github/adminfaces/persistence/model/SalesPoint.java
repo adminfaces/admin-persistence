@@ -13,6 +13,13 @@ public class SalesPoint implements PersistenceEntity {
 
     private String address;
 
+    public SalesPoint() {
+    }
+
+    public SalesPoint(SalesPointPK salesPointPK) {
+        this.salesPointPK = salesPointPK;
+    }
+
     public SalesPointPK getSalesPointPK() {
         return salesPointPK;
     }

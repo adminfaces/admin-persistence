@@ -4,13 +4,12 @@
  */
 package com.github.adminfaces.persistence.service;
 
-import com.github.adminfaces.persistence.model.Car;
-import com.github.adminfaces.persistence.model.Car_;
-import com.github.adminfaces.persistence.model.Filter;
+import com.github.adminfaces.persistence.model.*;
 import org.apache.deltaspike.data.api.criteria.Criteria;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 
 import javax.inject.Inject;
+import javax.persistence.criteria.JoinType;
 import java.io.Serializable;
 import java.util.List;
 
@@ -125,5 +124,18 @@ public class CarService extends CrudService<Car, Integer> implements Serializabl
     @Transactional
     public Car update(Car entity) {
         return super.update(entity);
+    }
+
+    public List<Car> findBySalesPointAddress(String address) {
+        return criteria().join(Car_.salesPoints,where(SalesPoint.class, JoinType.LEFT)
+                .likeIgnoreCase(SalesPoint_.address,"%"+address+"%"))
+                .getResultList();
+    }
+
+    public List<Car> findBySalesPoint(SalesPoint salesPoint) {
+        criteria().join(Car_.salesPoints,where(SalesPoint.class, JoinType.LEFT));
+        return criteria().join(Car_.salesPoints,where(SalesPoint.class, JoinType.LEFT)
+                .in(SalesPoint_.salesPointPK,salesPoint.getSalesPointPK()))
+                .getResultList();
     }
 }
