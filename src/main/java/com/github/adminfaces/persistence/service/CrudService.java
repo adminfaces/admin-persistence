@@ -167,7 +167,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     /**
      * Count all
      */
-    public long count() {
+    public Long count() {
         SingularAttribute<? super T, PK> id = entityManager.getMetamodel().entity(entityClass).getId(entityKey);
         return criteria()
                 .select(Long.class, count(id))
@@ -180,7 +180,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      * @param filter
      * @return
      */
-    public long count(Filter<T> filter) {
+    public Long count(Filter<T> filter) {
         SingularAttribute<? super T, PK> id = entityManager.getMetamodel().entity(entityClass).getId(entityKey);
         return configRestrictions(filter)
                 .select(Long.class, count(id))
@@ -193,7 +193,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      * @param criteria
      * @return
      */
-    public long count(Criteria<T, T> criteria) {
+    public Long count(Criteria<T, T> criteria) {
         SingularAttribute<? super T, PK> id = getEntityManager().getMetamodel().entity(entityClass).getId(entityKey);
         return criteria.select(Long.class, count(id))
                 .getSingleResult();

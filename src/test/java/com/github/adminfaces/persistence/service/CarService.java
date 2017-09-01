@@ -126,6 +126,12 @@ public class CarService extends CrudService<Car, Integer> implements Serializabl
         return super.update(entity);
     }
 
+    @Override
+    @Transactional
+    public Car saveOrUpdate(Car entity) {
+        return super.saveOrUpdate(entity);
+    }
+
     public List<Car> findBySalesPointAddress(String address) {
         return criteria().join(Car_.salesPoints,where(SalesPoint.class, JoinType.LEFT)
                 .likeIgnoreCase(SalesPoint_.address,"%"+address+"%"))

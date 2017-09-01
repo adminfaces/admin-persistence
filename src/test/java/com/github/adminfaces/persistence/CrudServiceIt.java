@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.*;
 
@@ -37,7 +38,7 @@ public class CrudServiceIt {
     @Test
     @DataSet("cars.yml")
     public void shouldCountCars() {
-        assertEquals(carService.count(), 4);
+        assertThat(carService.count()).isEqualTo(4);
     }
 
     @Test
@@ -103,17 +104,49 @@ public class CrudServiceIt {
         Car newCar = new Car().model("My Car")
                 .name("car name").price(1d);
         carService.insert(newCar);
-        assertEquals(countBefore + 1, carService.count());
+        assertEquals(new Long(countBefore + 1), carService.count());
     }
 
     @Test
     @DataSet("cars.yml")
     public void shouldRemoveCar() {
-        assertEquals(carService.count(carService.criteria().eq(Car_.id, 1)), 1);
-        Car car = carService.findById(1);
-        assertNotNull(car);
+        Car car = getCar();
         carService.remove(car);
-        assertEquals(carService.count(carService.criteria().eq(Car_.id, 1)), 0);
+        assertEquals(carService.count(carService.criteria().eq(Car_.id, 1)).intValue(), 0);
+    }
+
+    @Test
+    @DataSet("cars.yml")
+    public void shouldUpdateCar() {
+        Car car = getCar();
+        carService.remove(car);
+        assertEquals(carService.count(carService.criteria().eq(Car_.id, 1)), new Long(0));
+    }
+
+
+    @Test
+    @DataSet("cars.yml")
+    public void shouldSaveOrUpdateCar() {
+        Car car = getCar();
+        assertThat(car).extracting("model")
+                .contains("Ferrari");
+        car.setModel("Ferrari update");
+        carService.update(car);
+        Car carUpdated = getCar(1);
+        assertThat(carUpdated).extracting("model")
+                .contains("Ferrari update");
+
+        Car newCar = new Car();
+        newCar.model("new model").price(1111.1)
+                .name("new name");
+        newCar = carService.saveOrUpdate(newCar);
+
+        assertThat(newCar).isNotNull();
+
+        Integer id = newCar.getId();
+        assertThat(id).isNotNull();
+        newCar = getCar(id);
+        assertThat(newCar).isNotNull();
     }
 
     @Test
@@ -211,7 +244,7 @@ public class CrudServiceIt {
     @Test
     @DataSet("cars.yml")
     public void shoulListCarsUsingCrudUtility() {
-        assertEquals(4, crudService.count());
+        assertThat(new Long(4)).isEqualTo(crudService.count());
         long count = crudService.count(crudService.criteria()
                 .likeIgnoreCase(Car_.model, "%porche%")
                 .gtOrEq(Car_.price, 10000D));
@@ -251,13 +284,13 @@ public class CrudServiceIt {
     @Test
     @DataSet("cars-full.yml")
     public void shouldFindByCompositeKey() {
-        SalesPointPK pk = new SalesPointPK(1L,3L);
+        SalesPointPK pk = new SalesPointPK(1L, 3L);
         SalesPoint salesPoint = salesPointService.findById(pk);
         assertThat(salesPoint).isNotNull().extracting("name")
                 .contains("Ford Motors2");
     }
 
-     @Test
+    @Test
     @DataSet("cars-full.yml")
     public void shouldListCarsBySalesPoint() {
         List<Car> carsFound = carService.findBySalesPoint(new SalesPoint(new SalesPointPK(2L, 1L)));
@@ -284,12 +317,28 @@ public class CrudServiceIt {
         List<SalesPoint> salesPoints = new ArrayList<>();
         salesPoints.add(salesPoint);
         carExample.setSalesPoints(salesPoints);
-        List<Car> carsFound = carService.example(carExample,Car_.salesPoints).getResultList();
-           assertThat(carsFound).isNotNull().hasSize(1)
+        List<Car> carsFound = carService.example(carExample, Car_.salesPoints).getResultList();
+        assertThat(carsFound).isNotNull().hasSize(1)
                 .extracting("name")
                 .contains("Sentra");
     }
 
 
+    private Car getCar() {
+        assertEquals(carService.count(carService.criteria().eq(Car_.id, 1)).intValue(), 1);
+        Car car = carService.findById(1);
+        assertNotNull(car);
+        return car;
+    }
+
+    private Car getCar(Integer id) {
+        if(id == null) {
+            return getCar();
+        }
+        assertEquals(carService.count(carService.criteria().eq(Car_.id, id)), new Long(1));
+        Car car = carService.findById(id);
+        assertNotNull(car);
+        return car;
+    }
 
 }

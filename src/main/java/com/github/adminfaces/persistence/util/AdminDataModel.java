@@ -45,7 +45,7 @@ public class AdminDataModel<T extends PersistenceEntity> extends LazyDataModel<T
                 .setSortField(sortField).setAdminSort(order)
                 .setParams(filters);
         List<T> list = crudService.paginate(filter);
-        setRowCount((int) crudService.count(filter));
+        setRowCount(crudService.count(filter).intValue());
         return list;
     }
 

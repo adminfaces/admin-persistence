@@ -186,11 +186,11 @@
                         <phase>generate-test-sources</phase>
                     </execution>
                 </executions>
-               <configuration>
+             <!--  <configuration>
                     <processors>
                         <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
                     </processors>
-                </configuration>
+                </configuration>-->
                 <dependencies>
                     <dependency>
                         <groupId>org.hibernate</groupId>
