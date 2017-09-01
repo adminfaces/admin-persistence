@@ -19,3 +19,9 @@ car:
     name: "porche rally"
     price: 18990.23
     version: 0
+
+brand:
+
+sales_point:
+
+car_sales_point:

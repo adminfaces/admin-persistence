@@ -314,11 +314,10 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
                 criteria = criteria();
             }
 
-            Class joinClass = usingAttributes[0].getElementType().getJavaType();
-            Criteria joinCriteria = where(joinClass, JoinType.LEFT);
-            criteria.join(usingAttributes[0], joinCriteria);
-
             for (ListAttribute<T, ?> attribute : usingAttributes) {
+                Class joinClass = attribute.getElementType().getJavaType();
+                Criteria joinCriteria = where(joinClass, JoinType.LEFT);
+                criteria.join(attribute, joinCriteria);
             if (attribute.getJavaMember() instanceof Field) {
                 Field field = (Field) attribute.getJavaMember();
                 field.setAccessible(true);
