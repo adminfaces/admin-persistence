@@ -5,7 +5,7 @@ cache:
   directories:
   - "$HOME/.m2/repository"
 script:
-- mvn clean -U package deploy --settings settings.xml
+- mvn clean -U package deploy --settings settings.xml -Pcoverage jacoco:report coveralls:report
 env:
   global:
   - secure: acgA9hSXUXNIzBLG7Zp9wbxprlPAeY3rPTnsDQHXIE/VUl9WKm3Hbw8cEcgjAIf6TzlqurVGgnoaf6PC383sfbuJDSsl+FYWM+KHHLYfwc2y/v366kj3xgCNw8BDg/7udPJPbNw0K1qFEBBJaYzmCSoLMZacei0WIkdlasffhwhkc8uYCrlcSDgbGVG1tBmO5KQ6d+qYOWxr0Nt8+fzfUkvD6Y/yEs1z3zDKh/RpUkSGmwCgwjwoxEe+NyqKmctc3AgUZAbs5fXdT0qj1WemWwQvSzpQYi+a4Jtz1YkYTl/Tm15Q8y8BA9X/BZN2rcKUAPnZsdtElXsFG2/8DdN9OXpPnsccoAvG9KSgGgAuon3gB/GU6hgA6gTg7nq3Vj4uDKUfiXeZShen9eTp+I0R8didBOtr+vlcWjMWo7/Zsw/RLW5VD8BdHuPPMIhhNfX/HWrS25b+8CMawjhhuDOILLSme3ljdtwX03Ln9faOkkJU2RrDhgE5O5dzFKi7hv7xtwx+41Hm5UQCxyAn53e2eCdtguqYOkP618uRsxtFbBFaJ1r6t6jENsLmJ7mzIq+gZYaYESn03cPh5dpHzrujNHp1nUjrLDv/x7V8tkHY2CJatxmhk0kRa6N5/aLC27M4EPPQQQIXKtleWBJMw8P1bZuC4rBfv562xG9vbXohwvE=
