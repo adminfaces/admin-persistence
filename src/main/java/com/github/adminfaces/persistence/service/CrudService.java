@@ -40,10 +40,10 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
 
     @Inject
-    public void CrudService(InjectionPoint ip) {
+    protected void CrudService(InjectionPoint ip) {
         if (ip != null && ip.getType() != null) {
             try {
-                //will work for @Inject @Service CrudService<Entity,Key>
+                //Used for generic service injection, e.g: @Inject @Service CrudService<Entity,Key>
                 resolveEntity(ip);
             } catch (Exception e) {
                 LOG.warning(String.format("Could not resolve entity type and entity key via injection point [%s]. Now trying to resolve via generic superclass of [%s].",ip.getMember().getName(),getClass().getName()));
@@ -51,7 +51,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         }
 
         if (entityClass == null) {
-            //will work for service inheritance MyService extends CrudService<Entity, Key>
+            //Used on service inheritance, e.g: MyService extends CrudService<Entity, Key>
             entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
             entityKey = (Class<PK>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
 

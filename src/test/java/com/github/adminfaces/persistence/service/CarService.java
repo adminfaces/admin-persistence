@@ -122,6 +122,12 @@ public class CarService extends CrudService<Car, Integer> implements Serializabl
 
     @Override
     @Transactional
+    public void remove(List<Car> entities) {
+        super.remove(entities);
+    }
+
+    @Override
+    @Transactional
     public Car update(Car entity) {
         return super.update(entity);
     }

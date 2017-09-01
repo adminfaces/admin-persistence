@@ -117,6 +117,15 @@ public class CrudServiceIt {
 
     @Test
     @DataSet("cars.yml")
+    public void shouldRemoveCars() {
+        assertThat(carService.count()).isEqualTo(4L);
+        List<Car> cars = carService.criteria().getResultList();
+        carService.remove(cars);
+        assertEquals(carService.count().intValue(), 0);
+    }
+
+    @Test
+    @DataSet("cars.yml")
     public void shouldUpdateCar() {
         Car car = getCar();
         carService.remove(car);
