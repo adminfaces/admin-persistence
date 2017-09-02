@@ -1,19 +1,19 @@
 package com.github.adminfaces.persistence.service;
 
+import com.github.adminfaces.persistence.model.AdminSort;
 import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
-import com.github.adminfaces.persistence.model.AdminSort;
 import org.apache.deltaspike.data.api.criteria.Criteria;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
-import org.apache.deltaspike.data.impl.criteria.QueryCriteria;
 import org.apache.deltaspike.data.impl.handler.CriteriaSupportHandler;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -46,7 +46,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
                 //Used for generic service injection, e.g: @Inject @Service CrudService<Entity,Key>
                 resolveEntity(ip);
             } catch (Exception e) {
-                LOG.warning(String.format("Could not resolve entity type and entity key via injection point [%s]. Now trying to resolve via generic superclass of [%s].",ip.getMember().getName(),getClass().getName()));
+                LOG.warning(String.format("Could not resolve entity type and entity key via injection point [%s]. Now trying to resolve via generic superclass of [%s].", ip.getMember().getName(), getClass().getName()));
             }
         }
 
@@ -120,7 +120,10 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
             throw new RuntimeException("Record cannot be transient");
         }
         beforeRemove(entity);
-        entityManager.remove(entityManager.find(entityClass, entity.getId()));
+        if (!entityManager.contains(entity)) {
+            entity = entityManager.find(entityClass, entity.getId());
+        }
+        entityManager.remove(entity);
         afterRemove(entity);
     }
 
@@ -209,63 +212,127 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
 
     /**
+     * A 'criteria by example' will be created using an example entity. It will use <code>eq</code> for comparing 'simple' attributes,
+     * for <code>oneToOne</code> associations the entity PK will be compared and for oneToMany association and <code>in</code> comparing associated entities PKs.
+     *
      * @param example An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
-     * @return A criteria restricted by example using 'eq' for comparing attributes
+     * @param usingAttributes attributes from example entity to consider.
+     * @return A criteria restricted by example.
+     * @throws RuntimeException If no attribute is provided.
      */
-    public Criteria example(T example, SingularAttribute<T, ?>... usingAttributes) {
-        return example(criteria(),example,usingAttributes);
+    public Criteria example(T example, Attribute<T, ?>... usingAttributes) {
+        return example(criteria(), example, usingAttributes);
     }
 
     /**
+     * This example criteria will add restrictions to an existing criteria based on an example entity. It will use <code>eq</code> for comparing 'simple' attributes,
+     * for <code>oneToOne</code> associations the entity PK will be compared and for oneToMany association and <code>in</code> comparing associated entities PKs
+     *
      * @param criteria a criteria to add restrictions based on the example entity.
      * @param example An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
-     *
-     * @return A criteria restricted by example using 'eq' for comparing attributes
+     * @param usingAttributes attributes from example entity to consider.
+     * @return A criteria restricted by example.
+     * @throws RuntimeException If no attribute is provided.
      */
-    public Criteria example(Criteria criteria, T example, SingularAttribute<T, ?>... usingAttributes) {
-        if(criteria == null) {
+    public Criteria example(Criteria criteria, T example, Attribute<T, ?>... usingAttributes) {
+
+        if (criteria == null) {
             criteria = criteria();
         }
-        for (SingularAttribute<T, ?> attribute : usingAttributes) {
-            if (attribute.getJavaMember() instanceof Field) {
-                Field field = (Field) attribute.getJavaMember();
-                field.setAccessible(true);
-                try {
 
-                    Object value = field.get(example);
-                    if (value != null) {
-                        LOG.fine(String.format("Adding restriction by example on attribute %s using value %s.", attribute.getName(), value));
-                        criteria.eq(attribute, value);
-                    }
-                } catch (IllegalAccessException e) {
-                    LOG.warning(String.format("Could not get value from field %s of entity %s.", field.getName(), example.getClass().getName()));
-                }
-            }
+        if (usingAttributes == null || usingAttributes.length == 0) {
+            throw new RuntimeException("Please provide attributes to example criteria.");
         }
+
+        for (Attribute<T, ?> usingAttribute : usingAttributes) {
+            if (usingAttribute instanceof SingularAttribute) {
+                addEqExampleRestriction(criteria, example,  usingAttribute);
+            } else if (usingAttribute instanceof ListAttribute) {
+                addInExampleRestriction(criteria, example, usingAttribute);
+            }
+
+        }
+
         return criteria;
     }
 
 
+    private void addEqExampleRestriction(Criteria criteria, T example, Attribute<T, ?> attribute) {
+        if (attribute.getJavaMember() instanceof Field) {
+            Field field = (Field) attribute.getJavaMember();
+            field.setAccessible(true);
+            try {
+                Object value = field.get(example);
+                if (value != null) {
+                    LOG.fine(String.format("Adding an 'eq' restriction on attribute %s using value %s.", attribute.getName(), value));
+                    criteria.eq((SingularAttribute) attribute, value);
+                }
+            } catch (IllegalAccessException e) {
+                LOG.warning(String.format("Could not get value from field %s of entity %s.", field.getName(), example.getClass().getName()));
+            }
+        }
+    }
+
+
+    private void addInExampleRestriction(Criteria criteria, T example, Attribute<T, ?> attribute) {
+        ListAttribute<T, ?> listAttribute = (ListAttribute<T, ?>) attribute;
+        Class joinClass = listAttribute.getElementType().getJavaType();
+        Criteria joinCriteria = where(joinClass, JoinType.LEFT);
+        criteria.join(listAttribute, joinCriteria);
+        if (attribute.getJavaMember() instanceof Field) {
+            Field field = (Field) attribute.getJavaMember();
+            field.setAccessible(true);
+            try {
+                Object value = field.get(example);
+                if (value != null) {
+                    LOG.fine(String.format("Adding an ín'restriction on attribute %s using value %s.", attribute.getName(), value));
+                    List<PersistenceEntity> association = (List<PersistenceEntity>) value;
+                    SingularAttribute id = getEntityManager().getMetamodel().entity(listAttribute.getElementType().getJavaType()).getId(association.get(0).getId().getClass());
+                    List<Serializable> ids = new ArrayList<>();
+                    for (PersistenceEntity persistenceEntity : association) {
+                        ids.add(persistenceEntity.getId());
+                    }
+
+                    joinCriteria.in(id, ids);
+                }
+            } catch (IllegalAccessException e) {
+                LOG.warning(String.format("Could not get value from field %s of entity %s.", field.getName(), example.getClass().getName()));
+            }
+        }
+    }
+
+
+
     /**
-     * @param example An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
+     * A 'criteria by example' will be created using an example entity. ONLY <code>String</code> attributes will be considered.
+     * It will use 'likeIgnoreCase' for comparing STRING attributes of the example entity.
      *
+     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param usingAttributes attributes from example entity to consider.
      * @return A criteria restricted by example using 'likeIgnoreCase' for comparing attributes
+     * @throws RuntimeException If no attribute is provided.
      */
     public Criteria exampleLike(T example, SingularAttribute<T, String>... usingAttributes) {
-       return exampleLike(criteria(),example,usingAttributes);
+        return exampleLike(criteria(), example, usingAttributes);
     }
 
     /**
-     * @param criteria a pre populated criteria
-     * @param example An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
      *
-     * @return A criteria restricted by example using 'likeIgnoreCase' for comparing attributes
+     * @param criteria a pre populated criteria to add example based <code>like</code> restrictions
+     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param usingAttributes attributes from example entity to consider.
+     * @return A criteria restricted by example using <code>likeIgnoreCase</code> for comparing attributes
+     * @throws RuntimeException If no attribute is provided.
      */
     public Criteria exampleLike(Criteria criteria, T example, SingularAttribute<T, String>... usingAttributes) {
+
+        if (usingAttributes == null || usingAttributes.length == 0) {
+            throw new RuntimeException("Please provide attributes to example criteria.");
+        }
+
+        if(criteria == null){
+            criteria = criteria();
+        }
 
         for (SingularAttribute<T, ?> attribute : usingAttributes) {
             if (attribute.getJavaMember() instanceof Field) {
@@ -286,61 +353,6 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         return criteria;
     }
 
-
-    /**
-     * @param example An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
-     *
-     * @return A criteria restricted by example using 'in' for comparing each element of list attributes
-     */
-    public Criteria example(T example, ListAttribute<T, ?>... usingAttributes) {
-       return example(criteria(),example,usingAttributes);
-    }
-
-    /**
-     * @param criteria a criteria to add restrictions based on the example entity.
-     * @param example An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then a no restriction will be added.
-     *
-     * @return A criteria restricted by example using 'in'for comparing each element of list attributes
-     */
-    public  Criteria example(Criteria<T,?> criteria, T example, ListAttribute<T, ?>... usingAttributes) {
-
-         if(usingAttributes == null || usingAttributes.length == 0) {
-                throw new RuntimeException("Please provide attributes to example criteria.");
-            }
-
-            if(criteria == null){
-                criteria = criteria();
-            }
-
-            for (ListAttribute<T, ?> attribute : usingAttributes) {
-                Class joinClass = attribute.getElementType().getJavaType();
-                Criteria joinCriteria = where(joinClass, JoinType.LEFT);
-                criteria.join(attribute, joinCriteria);
-            if (attribute.getJavaMember() instanceof Field) {
-                Field field = (Field) attribute.getJavaMember();
-                field.setAccessible(true);
-                try {
-                    Object value = field.get(example);
-                    if (value != null) {
-                        LOG.fine(String.format("Adding restriction by example on attribute %s using value %s.", attribute.getName(), value));
-                        List<PersistenceEntity> association = (List<PersistenceEntity>) value;
-                        SingularAttribute id = getEntityManager().getMetamodel().entity(attribute.getElementType().getJavaType()).getId(association.get(0).getId().getClass());
-                        List<Serializable> ids = new ArrayList<>();
-                        for (PersistenceEntity persistenceEntity : association) {
-                             ids.add(persistenceEntity.getId());
-                        }
-
-                       joinCriteria.in(id, ids);
-                    }
-                } catch (IllegalAccessException e) {
-                    LOG.warning(String.format("Could not get value from field %s of entity %s.", field.getName(), example.getClass().getName()));
-                }
-            }
-        }
-        return criteria;
-    }
 
     public Class<PK> getEntityKey() {
         return entityKey;

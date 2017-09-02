@@ -6,6 +6,7 @@ import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.service.Service;
 import com.github.database.rider.cdi.api.DBUnitInterceptor;
 import com.github.database.rider.core.api.dataset.DataSet;
+import org.apache.deltaspike.data.api.criteria.Criteria;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +20,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.*;
 
 @RunWith(CdiTestRunner.class)
-@DBUnitInterceptor
 @DataSet(cleanBefore = true)
+@DBUnitInterceptor
 public class CrudServiceIt {
 
     @Inject
@@ -64,13 +65,13 @@ public class CrudServiceIt {
     @Test
     public void shouldNotInsertCarWithoutName() {
         long countBefore = carService.count();
-        assertEquals(countBefore, 0);
         Car newCar = new Car().model("My Car").price(1d);
         try {
             carService.insert(newCar);
         } catch (RuntimeException e) {
             assertEquals("Car name cannot be empty", e.getMessage());
         }
+        assertThat(countBefore).isEqualTo(carService.count());
     }
 
     @Test
@@ -126,10 +127,61 @@ public class CrudServiceIt {
 
     @Test
     @DataSet("cars.yml")
+    public void shouldRemoveCarNotAttachedToPersistenceContext() {
+        assertThat(carService.count()).isEqualTo(4L);
+        Car car = new Car(1);
+        carService.remove(car);
+        assertThat(carService.count()).isEqualTo(3L);
+    }
+
+    @Test
+    @DataSet("cars.yml")
     public void shouldUpdateCar() {
         Car car = getCar();
-        carService.remove(car);
-        assertEquals(carService.count(carService.criteria().eq(Car_.id, 1)), new Long(0));
+        car.name("updated name");
+        carService.update(car);
+        Car carFound = carService.criteria().eq(Car_.id,1).getSingleResult();
+        assertThat(carFound).isNotNull().extracting("name")
+                .contains("updated name");
+    }
+
+    @Test
+    @DataSet("cars.yml")
+    public void shouldUpdateCarNotAttachedToPersistenceContext() {
+        Car car = new Car(1);
+        car.model("updated model").name("updated name").price(1.2);
+        Car updatedCar = carService.update(car);
+        assertThat(updatedCar).isNotNull().extracting("id")
+                .contains(5);//a new record will be created because entity was not managed
+        Car carFound = carService.criteria().eq(Car_.id,1).getSingleResult();
+        assertThat(carFound).isNotNull().extracting("model")
+                .contains("Ferrari"); //entity of id 1 was not updated
+
+        carFound = carService.criteria().eq(Car_.id,5).getSingleResult();
+        assertThat(carFound).isNotNull().extracting("model")
+                .contains("updated model");
+
+
+    }
+
+    @Test
+    public void shouldNotUpdateNullCar() {
+        try {
+            carService.update(null);
+        }catch (RuntimeException e ) {
+            assertThat(e.getMessage()).isEqualTo("Record cannot be null");
+        }
+    }
+
+    @Test
+    public void shouldNotUpdateCarWithoutId() {
+        Car car = new Car();
+        car.model("updated model").name("updated name").price(1.2);
+        try {
+            carService.update(car);
+        }catch (RuntimeException e ) {
+            assertThat(e.getMessage()).isEqualTo("Record cannot be transient");
+        }
     }
 
 
@@ -201,10 +253,10 @@ public class CrudServiceIt {
     @Test
     @DataSet("cars.yml")
     public void shouldPaginateCarsByModel() {
-        Car carExample = new Car().model("Ferrari");
+        Car car = new Car().model("Ferrari");
         Filter<Car> carFilter = new Filter<Car>().
                 setFirst(0).setPageSize(4)
-                .setEntity(carExample);
+                .setEntity(car);
         List<Car> cars = carService.paginate(carFilter);
         assertThat(cars).isNotNull().hasSize(1)
                 .extracting("model").contains("Ferrari");
@@ -276,12 +328,13 @@ public class CrudServiceIt {
         assertThat(cars).isNotNull().hasSize(1)
                 .extracting("name")
                 .contains("porche avenger");
+    }
 
-        cars = crudService.exampleLike(carExample).getResultList();
-
-        //should list all when no property is provided
-        assertThat(cars).isNotNull().hasSize(4);
-
+    @Test(expected = RuntimeException.class)
+    @DataSet("cars.yml")
+    public void shouldNotFindCarsByExampleWithoutAttributes() {
+        Car carExample = new Car().model("Ferrari");
+        List<Car> cars = crudService.example(carExample).getResultList();
     }
 
     @Test
@@ -332,12 +385,56 @@ public class CrudServiceIt {
                 .contains("Sentra");
     }
 
+    @Test
+    @DataSet("cars-full.yml")
+    public void shouldFindCarByMultipleExampleCriteria() {
+        Car carExample = new Car().model("SE");
+        SalesPoint salesPoint = new SalesPoint(new SalesPointPK(2L, 1L));
+        List<SalesPoint> salesPoints = new ArrayList<>();
+        salesPoints.add(salesPoint);
+        carExample.setSalesPoints(salesPoints);
+
+        Brand brand = new Brand(2L);
+
+        carExample.setBrand(brand);//model SE, brand: Nissan, salesPint: Nissan Sales
+
+        Criteria<Car,Car> criteriaByExample = carService.example(carExample, Car_.model, Car_.brand,Car_.salesPoints);
+
+        assertThat(carService.count(criteriaByExample).intValue()).isEqualTo(1);
+
+        List<Car> carsFound = criteriaByExample.getResultList();
+        assertThat(carsFound).isNotNull().hasSize(1)
+                .extracting("name")
+                .contains("Sentra");
+    }
+
+    @Test
+    @DataSet("cars-full.yml")
+    public void shouldFindCarByExampleUsingAnExistingCriteria() {
+        Criteria<Car,Car> criteria = crudService.criteria()
+                .join(Car_.brand,carService.where(Brand.class)
+                 .eq(Brand_.name,"Nissan")
+                ); //cars with brand nissan
+
+        Car carExample = new Car().model("SE");
+        //will add a restriction by car 'model' using example criteria
+        Criteria<Car,Car> criteriaByExample = carService.example(criteria,carExample, Car_.model);
+
+
+        criteriaByExample = carService.example(criteriaByExample,carExample,Car_.salesPoints);
+
+        assertThat(carService.count(criteriaByExample).intValue()).isEqualTo(1);
+
+        List<Car> carsFound = criteriaByExample.getResultList();
+        assertThat(carsFound).isNotNull().hasSize(1)
+                .extracting("name")
+                .contains("Sentra");
+    }
+
 
     private Car getCar() {
-        assertEquals(carService.count(carService.criteria().eq(Car_.id, 1)).intValue(), 1);
-        Car car = carService.findById(1);
-        assertNotNull(car);
-        return car;
+
+        return getCar(1);
     }
 
     private Car getCar(Integer id) {
