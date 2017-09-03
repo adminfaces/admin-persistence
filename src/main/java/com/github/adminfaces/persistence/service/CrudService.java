@@ -213,7 +213,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     /**
      * A 'criteria by example' will be created using an example entity. It will use <code>eq</code> for comparing 'simple' attributes,
-     * for <code>oneToOne</code> associations the entity PK will be compared and for oneToMany association and <code>in</code> comparing associated entities PKs.
+     * for <code>oneToOne</code> associations the entity PK will be compared and for oneToMany association an <code>in</code> for comparing associated entities PKs.
      *
      * @param example An entity whose attribute's value will be used for creating a criteria
      * @param usingAttributes attributes from example entity to consider.
@@ -226,7 +226,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     /**
      * This example criteria will add restrictions to an existing criteria based on an example entity. It will use <code>eq</code> for comparing 'simple' attributes,
-     * for <code>oneToOne</code> associations the entity PK will be compared and for oneToMany association and <code>in</code> comparing associated entities PKs
+     * for <code>oneToOne</code> associations the entity PK will be compared and for oneToMany association an <code>in</code> for comparing associated entities PKs
      *
      * @param criteria a criteria to add restrictions based on the example entity.
      * @param example An entity whose attribute's value will be used for creating a criteria
