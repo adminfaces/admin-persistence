@@ -52,7 +52,7 @@ First include it in your classpath:
 <dependency>
     <groupId>com.github.adminfaces</groupId>
     <artifactId>admin-persistence</artifactId>
-    <version>1.0.0-RC7</version>
+    <version>1.0.0-RC8</version>
 </dependency>
 ----
 +
@@ -186,7 +186,7 @@ public class CarService extends CrudService<Car, Integer>  {
 +
 TIP: Full source code for CarService can be https://github.com/adminfaces/admin-starter-persistence/blob/master/src/main/java/com/github/adminfaces/starter/service/CarService.java#L27[found here^].
 
-TIP: For some examples of CrudService usage https://github.com/adminfaces/admin-persistence/blob/master/src/test/java/com/github/adminfaces/persistence/CrudServiceIt.java#L24[see integration tests here^].
+NOTE: For some examples of CrudService usage https://github.com/adminfaces/admin-persistence/blob/master/src/test/java/com/github/adminfaces/persistence/CrudServiceIt.java#L24[see integration tests here^].
 
 . *Controller*
 +
