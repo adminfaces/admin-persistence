@@ -11,14 +11,13 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.*;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -214,7 +213,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      * A 'criteria by example' will be created using an example entity. It will use <code>eq</code> for comparing 'simple' attributes,
      * for <code>oneToOne</code> associations the entity PK will be compared and for oneToMany association an <code>in</code> for comparing associated entities PKs.
      *
-     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param example         An entity whose attribute's value will be used for creating a criteria
      * @param usingAttributes attributes from example entity to consider.
      * @return A criteria restricted by example.
      * @throws RuntimeException If no attribute is provided.
@@ -227,8 +226,8 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      * This example criteria will add restrictions to an existing criteria based on an example entity. It will use <code>eq</code> for comparing 'simple' attributes,
      * for <code>oneToOne</code> associations the entity PK will be compared and for oneToMany association an <code>in</code> for comparing associated entities PKs
      *
-     * @param criteria a criteria to add restrictions based on the example entity.
-     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param criteria        a criteria to add restrictions based on the example entity.
+     * @param example         An entity whose attribute's value will be used for creating a criteria
      * @param usingAttributes attributes from example entity to consider.
      * @return A criteria restricted by example.
      * @throws RuntimeException If no attribute is provided.
@@ -245,8 +244,8 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
         for (Attribute<T, ?> usingAttribute : usingAttributes) {
             if (usingAttribute instanceof SingularAttribute) {
-                addEqExampleRestriction(criteria, example,  usingAttribute);
-            } else if (usingAttribute instanceof ListAttribute) {
+                addEqExampleRestriction(criteria, example, usingAttribute);
+            } else if (usingAttribute instanceof PluralAttribute) {
                 addInExampleRestriction(criteria, example, usingAttribute);
             }
 
@@ -274,10 +273,18 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
 
     private void addInExampleRestriction(Criteria criteria, T example, Attribute<T, ?> attribute) {
-        ListAttribute<T, ?> listAttribute = (ListAttribute<T, ?>) attribute;
+        PluralAttribute<T, ?, ?> listAttribute = (PluralAttribute<T, ?, ?>) attribute;
         Class joinClass = listAttribute.getElementType().getJavaType();
         Criteria joinCriteria = where(joinClass, JoinType.LEFT);
-        criteria.join(listAttribute, joinCriteria);
+        if (listAttribute instanceof ListAttribute) {
+            criteria.join((ListAttribute) listAttribute, joinCriteria);
+        } else if (listAttribute instanceof SetAttribute) {
+            criteria.join((SetAttribute) listAttribute, joinCriteria);
+        } else if (listAttribute instanceof MapAttribute) {
+            criteria.join((MapAttribute) listAttribute, joinCriteria);
+        } else if (listAttribute instanceof CollectionAttribute) {
+            criteria.join((CollectionAttribute) listAttribute, joinCriteria);
+        }
         if (attribute.getJavaMember() instanceof Field) {
             Field field = (Field) attribute.getJavaMember();
             field.setAccessible(true);
@@ -285,8 +292,8 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
                 Object value = field.get(example);
                 if (value != null) {
                     LOG.fine(String.format("Adding an ín'restriction on attribute %s using value %s.", attribute.getName(), value));
-                    List<PersistenceEntity> association = (List<PersistenceEntity>) value;
-                    SingularAttribute id = getEntityManager().getMetamodel().entity(listAttribute.getElementType().getJavaType()).getId(association.get(0).getId().getClass());
+                    Collection<PersistenceEntity> association = (Collection<PersistenceEntity>) value;
+                    SingularAttribute id = getEntityManager().getMetamodel().entity(listAttribute.getElementType().getJavaType()).getId(association.iterator().next().getId().getClass());
                     List<Serializable> ids = new ArrayList<>();
                     for (PersistenceEntity persistenceEntity : association) {
                         ids.add(persistenceEntity.getId());
@@ -301,12 +308,11 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     }
 
 
-
     /**
      * A 'criteria by example' will be created using an example entity. ONLY <code>String</code> attributes will be considered.
      * It will use 'likeIgnoreCase' for comparing STRING attributes of the example entity.
      *
-     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param example         An entity whose attribute's value will be used for creating a criteria
      * @param usingAttributes attributes from example entity to consider.
      * @return A criteria restricted by example using 'likeIgnoreCase' for comparing attributes
      * @throws RuntimeException If no attribute is provided.
@@ -316,9 +322,8 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     }
 
     /**
-     *
-     * @param criteria a pre populated criteria to add example based <code>like</code> restrictions
-     * @param example An entity whose attribute's value will be used for creating a criteria
+     * @param criteria        a pre populated criteria to add example based <code>like</code> restrictions
+     * @param example         An entity whose attribute's value will be used for creating a criteria
      * @param usingAttributes attributes from example entity to consider.
      * @return A criteria restricted by example using <code>likeIgnoreCase</code> for comparing attributes
      * @throws RuntimeException If no attribute is provided.
@@ -329,7 +334,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
             throw new RuntimeException("Please provide attributes to example criteria.");
         }
 
-        if(criteria == null){
+        if (criteria == null) {
             criteria = criteria();
         }
 
