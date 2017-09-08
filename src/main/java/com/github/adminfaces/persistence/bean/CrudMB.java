@@ -6,6 +6,7 @@ import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.util.AdminDataModel;
 import com.github.adminfaces.persistence.util.Messages;
 import com.github.adminfaces.persistence.util.SessionFilter;
+import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ public abstract class CrudMB<T extends PersistenceEntity> {
 
     protected final Logger LOG = LoggerFactory.getLogger(getClass().getName());
 
-    private CrudService<T, ?> crudService;
+    private CrudService<T, ? extends Serializable> crudService;
 
     protected T entity; //entity to crud
 
@@ -54,8 +55,11 @@ public abstract class CrudMB<T extends PersistenceEntity> {
     public void initCrudMB() {
 
         if (getCrudService() == null) {
-            LOG.error("You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
-            throw new RuntimeException("You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
+            initServiceViaAnnotation();
+            if(crudService == null) {
+                LOG.error("You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
+                throw new RuntimeException("You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
+            }
         }
 
         entity = initEntity();
@@ -63,6 +67,14 @@ public abstract class CrudMB<T extends PersistenceEntity> {
         filter = initFilter();
 
         list = new AdminDataModel<T>(crudService, filter);
+    }
+
+    private void initServiceViaAnnotation() {
+        if(getClass().isAnnotationPresent(BeanService.class)) {
+            BeanService beanService = getClass().getAnnotation(BeanService.class);
+            Class<? extends CrudService> serviceClass = beanService.value();
+            crudService = BeanProvider.getContextualReference(serviceClass);
+        }
     }
 
 

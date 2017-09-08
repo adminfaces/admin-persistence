@@ -41,7 +41,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     @Inject
     protected void CrudService(InjectionPoint ip) {
-        if (ip != null && ip.getType() != null) {
+        if (ip != null && ip.getType() != null && ip.getMember() != null) {
             try {
                 //Used for generic service injection, e.g: @Inject @Service CrudService<Entity,Key>
                 resolveEntity(ip);
@@ -54,7 +54,6 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
             //Used on service inheritance, e.g: MyService extends CrudService<Entity, Key>
             entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
             entityKey = (Class<PK>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-
         }
     }
 

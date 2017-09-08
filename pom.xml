@@ -124,14 +124,14 @@
             <version>${version.deltaspike}</version>
             <scope>test</scope>
         </dependency>
-        <dependency> <!--3 -->
+        <dependency>
             <groupId>org.apache.deltaspike.cdictrl</groupId>
             <artifactId>deltaspike-cdictrl-owb</artifactId>
             <version>${version.deltaspike}</version>
             <scope>test</scope>
         </dependency>
 
-        <dependency> <!--4 -->
+        <dependency>
             <groupId>org.apache.openwebbeans</groupId>
             <artifactId>openwebbeans-impl</artifactId>
             <version>1.6.2</version>
