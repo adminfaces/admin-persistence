@@ -222,7 +222,7 @@ You can use *@BeanService* annotation (since 1.0.0-RC9) to provide CrudService:
 ----
 @Named
 @ViewScoped
-@BeanService(CarService.class)//use annotation instead of setter in injection
+@BeanService(CarService.class)//use annotation instead of setter injection
 public class CarListMB extends CrudMB<Car> implements Serializable {
 
 }
