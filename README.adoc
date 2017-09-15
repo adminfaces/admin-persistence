@@ -25,7 +25,6 @@ CRUD operations like a breeze for https://github.com/adminfaces[AdminFaces appli
 
 This module depends on `JSF`, `CDI` and `JPA` and was tested with respective implementations and versions:
 
-
 |===
 
 |JSF | CDI | JPA
@@ -37,7 +36,6 @@ This module depends on `JSF`, `CDI` and `JPA` and was tested with respective imp
 |MyFaces 2.1| OpenWebBeans 1.7.4| Eclipselink 2.6
 
 |===
-
 
 
 == Usage
@@ -133,7 +131,7 @@ TIP: See https://docs.jboss.org/hibernate/orm/5.0/topical/html/metamodelgen/Meta
 
 . *Entity Manager*
 +
-Admin persistence needs an exposed `entity manager` as CDI Bean, you can do that by using a CDI producer:
+Admin persistence needs an exposed `entity manager` as CDI Bean, you can do that by using a http://docs.oracle.com/javaee/6/tutorial/doc/gjdid.html[CDI producer^]:
 +
 [source,java]
 ----
