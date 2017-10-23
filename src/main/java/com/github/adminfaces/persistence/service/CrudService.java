@@ -101,9 +101,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
             throw new RuntimeException("Record cannot be null");
         }
 
-        if (entity.getId() != null) {
-            throw new RuntimeException("Record must be transient");
-        }
+
         beforeInsert(entity);
         entityManager.persist(entity);
         afterInsert(entity);
@@ -169,10 +167,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      * Count all
      */
     public Long count() {
-        SingularAttribute<? super T, PK> id = entityManager.getMetamodel().entity(entityClass).getId(entityKey);
-        return criteria()
-                .select(Long.class, count(id))
-                .getSingleResult();
+        return count(criteria());
     }
 
     /**
@@ -182,10 +177,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      * @return
      */
     public Long count(Filter<T> filter) {
-        SingularAttribute<? super T, PK> id = entityManager.getMetamodel().entity(entityClass).getId(entityKey);
-        return configRestrictions(filter)
-                .select(Long.class, count(id))
-                .getSingleResult();
+        return count(configRestrictions(filter));
     }
 
     /**
@@ -196,7 +188,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      */
     public Long count(Criteria<T, T> criteria) {
         SingularAttribute<? super T, PK> id = getEntityManager().getMetamodel().entity(entityClass).getId(entityKey);
-        return criteria.select(Long.class, count(id))
+        return criteria.select(Long.class, countDistinct(id))
                 .getSingleResult();
     }
 

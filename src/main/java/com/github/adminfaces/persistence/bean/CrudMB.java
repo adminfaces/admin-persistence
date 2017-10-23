@@ -23,7 +23,7 @@ public abstract class CrudMB<T extends PersistenceEntity> {
 
     protected final Logger LOG = LoggerFactory.getLogger(getClass().getName());
 
-    private CrudService<T, ? extends Serializable> crudService;
+    protected CrudService<T, ? extends Serializable> crudService;
 
     protected T entity; //entity to crud
 
@@ -66,7 +66,7 @@ public abstract class CrudMB<T extends PersistenceEntity> {
 
         filter = initFilter();
 
-        list = new AdminDataModel<T>(crudService, filter);
+        list = new AdminDataModel<>(crudService, filter);
     }
 
     private void initServiceViaAnnotation() {

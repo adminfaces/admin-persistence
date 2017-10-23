@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.*;
 
@@ -356,8 +355,7 @@ public class CrudServiceIt {
     @DataSet("cars-full.yml")
     public void shouldCountByCompositeKey() {
         Long count = salesPointService.count();
-        assertThat(count).isNotNull().isEqualTo("name")
-                .contains("Ford Motors2");
+        assertThat(count).isNotNull().isEqualTo(3);
     }
 
     @Test
