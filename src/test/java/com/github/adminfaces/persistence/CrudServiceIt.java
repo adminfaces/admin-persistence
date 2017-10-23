@@ -354,6 +354,14 @@ public class CrudServiceIt {
 
     @Test
     @DataSet("cars-full.yml")
+    public void shouldCountByCompositeKey() {
+        Long count = salesPointService.count();
+        assertThat(count).isNotNull().isEqualTo("name")
+                .contains("Ford Motors2");
+    }
+
+    @Test
+    @DataSet("cars-full.yml")
     public void shouldListCarsBySalesPoint() {
         List<Car> carsFound = carService.findBySalesPoint(new SalesPoint(new SalesPointPK(2L, 1L)));
         assertThat(carsFound).isNotNull().hasSize(1)
