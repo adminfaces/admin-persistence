@@ -360,6 +360,7 @@ You can change this behavior by overriding  keepFiltersInSession method on your 
 
 For an example project using Admin Persistence https://github.com/adminfaces/admin-starter-persistence[see admin-starter-persistence^].
 
+TIP: For a `composite-key` demo https://github.com/adminfaces/admin-starter-persistence/tree/composite-key[see this branch^] of admin-starter.
 
 == Snapshots
 
