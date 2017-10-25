@@ -101,7 +101,6 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
             throw new RuntimeException("Record cannot be null");
         }
 
-
         beforeInsert(entity);
         entityManager.persist(entity);
         afterInsert(entity);
