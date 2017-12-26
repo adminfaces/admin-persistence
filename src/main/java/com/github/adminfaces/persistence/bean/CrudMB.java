@@ -19,7 +19,7 @@ import java.util.List;
 
 import static com.github.adminfaces.persistence.util.Messages.addDetailMessage;
 
-public abstract class CrudMB<T extends PersistenceEntity> {
+public abstract class CrudMB<T extends PersistenceEntity> implements Serializable {
 
     protected final Logger LOG = LoggerFactory.getLogger(getClass().getName());
 
