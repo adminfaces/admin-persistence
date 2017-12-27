@@ -258,7 +258,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     }
 
     public void afterRemove() {
-        addDetailMessage(getRemoveMessage());
+        addDetailMsg(getRemoveMessage());
     }
 
     public void beforeInsert() {
@@ -266,14 +266,14 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     }
 
     public void afterInsert() {
-        addDetailMessage(getCreateMessage());
+        addDetailMsg(getCreateMessage());
     }
 
     public void beforeUpdate() {
     }
 
     public void afterUpdate() {
-        addDetailMessage(getUpdateMessage());
+        addDetailMsg(getUpdateMessage());
     }
 
     public static void addDetailMsg(String message) {
