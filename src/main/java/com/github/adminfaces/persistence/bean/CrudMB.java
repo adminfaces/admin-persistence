@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -273,6 +274,14 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
     public void afterUpdate() {
         addDetailMessage(getUpdateMessage());
+    }
+
+    public static void addDetailMsg(String message) {
+        addDetailMessage(message);
+    }
+
+    public static void addDetailMsg(String message, FacesMessage.Severity severity) {
+        addDetailMessage(message, severity);
     }
 
 
