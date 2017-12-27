@@ -175,26 +175,26 @@
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.3.2</version>
                 <executions>
                     <execution>
-                        <id>process-test</id>
+                       <id>process-test</id>
                         <goals>
                             <goal>process-test</goal>
                         </goals>
                         <phase>generate-test-sources</phase>
+                        <configuration>
+                            <processors>
+                                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+                            </processors>
+                        </configuration>
                     </execution>
                 </executions>
-             <!--  <configuration>
-                    <processors>
-                        <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
-                    </processors>
-                </configuration>-->
                 <dependencies>
                     <dependency>
                         <groupId>org.hibernate</groupId>
                         <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>4.3.8.Final</version>
+                        <version>5.2.12.Final</version>
                     </dependency>
                 </dependencies>
             </plugin>
