@@ -194,7 +194,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     public T findById(Serializable id) {
         T entity = entityManager.find(entityClass, id);
         if (entity == null) {
-            LOG.warning(String.format("Record with id %s not found.", id));
+            LOG.warning(String.format("Record with id %s not found for entity %s.", id, entityClass.getName()));
         }
         return entity;
     }
