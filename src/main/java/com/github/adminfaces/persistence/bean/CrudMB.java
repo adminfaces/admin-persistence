@@ -228,12 +228,10 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         if (isNew()) {
             beforeInsert();
             crudService.insert(entity);
-            addDetailMessage(getCreateMessage());
             afterInsert();
         } else {
             beforeUpdate();
             entity = crudService.update(entity);
-            addDetailMessage(getUpdateMessage());
             afterUpdate();
         }
     }
@@ -241,7 +239,6 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     public void remove() {
         beforeRemove();
         crudService.remove(entity);
-        addDetailMessage(getRemoveMessage());
         afterRemove();
     }
 
@@ -260,7 +257,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     }
 
     public void afterRemove() {
-
+        addDetailMessage(getRemoveMessage());
     }
 
     public void beforeInsert() {
@@ -268,15 +265,14 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     }
 
     public void afterInsert() {
-
+        addDetailMessage(getCreateMessage());
     }
 
     public void beforeUpdate() {
-
     }
 
     public void afterUpdate() {
-
+        addDetailMessage(getUpdateMessage());
     }
 
 
