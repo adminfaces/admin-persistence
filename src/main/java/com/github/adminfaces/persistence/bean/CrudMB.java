@@ -225,7 +225,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
     // actions
 
-    public void save() {
+    public T save() {
         if (isNew()) {
             beforeInsert();
             crudService.insert(entity);
@@ -235,6 +235,8 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
             entity = crudService.update(entity);
             afterUpdate();
         }
+
+        return entity;
     }
 
     public void remove() {
