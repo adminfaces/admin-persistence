@@ -43,9 +43,6 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     @Inject
     protected SessionFilter sessionFilter; //save filters in session
 
-    @Inject
-    protected Messages messages;
-
     private String createMessage;
 
     private String removeMessage;
