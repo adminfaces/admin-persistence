@@ -7,8 +7,6 @@ import com.github.adminfaces.persistence.util.AdminDataModel;
 import com.github.adminfaces.persistence.util.Messages;
 import com.github.adminfaces.persistence.util.SessionFilter;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -17,12 +15,14 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.github.adminfaces.persistence.util.Messages.addDetailMessage;
 
 public abstract class CrudMB<T extends PersistenceEntity> implements Serializable {
 
-    protected final Logger LOG = LoggerFactory.getLogger(getClass().getName());
+    protected final Logger log = Logger.getLogger(getClass().getName());
 
     protected CrudService<T, ? extends Serializable> crudService;
 
@@ -58,7 +58,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         if (getCrudService() == null) {
             initServiceViaAnnotation();
             if(crudService == null) {
-                LOG.error("You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
+                log.log(Level.SEVERE,"You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
                 throw new RuntimeException("You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
             }
         }
@@ -119,7 +119,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         try {
             return ((Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]).newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            LOG.error(String.format("Could not create entity class for bean %s", getClass().getName()), e);
+            log.log(Level.SEVERE,String.format("Could not create entity class for bean %s", getClass().getName()), e);
             throw new RuntimeException(e);
         }
     }
@@ -128,7 +128,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         try {
             return new Filter<>(((Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]).newInstance());
         } catch (InstantiationException | IllegalAccessException e) {
-            LOG.error(String.format("Could not create filters for bean %s", getClass().getName()), e);
+            log.log(Level.SEVERE,String.format("Could not create filters for bean %s", getClass().getName()), e);
             throw new RuntimeException(e);
         }
     }

@@ -11,7 +11,7 @@
 
     <groupId>com.github.adminfaces</groupId>
     <artifactId>admin-persistence</artifactId>
-    <version>1.0.0-RC11-SNAPSHOT</version>
+    <version>1.0.0-RC11</version>
 
     <name>admin-persistence</name>
     <url>https://github.com/adminfaces/admin-persistence</url>
@@ -82,12 +82,6 @@
             <artifactId>deltaspike-data-module-impl</artifactId>
             <version>${version.deltaspike}</version>
             <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.22</version>
         </dependency>
 
         <!-- test -->

@@ -1,7 +1,5 @@
 package com.github.adminfaces.persistence.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -10,11 +8,13 @@ import javax.faces.context.FacesContext;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class Messages {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Messages.class.getName());
+    private static final Logger log = Logger.getLogger(Messages.class.getName());
 
     private ResourceBundle bundle;
 
@@ -23,7 +23,7 @@ public class Messages {
         try {
             bundle = ResourceBundle.getBundle("messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         }catch (MissingResourceException e) {
-            LOG.warn("Application resource bundle named 'messages' not found.");
+            log.log(Level.WARNING,"Application resource bundle named 'messages' not found.");
         }
     }
 
