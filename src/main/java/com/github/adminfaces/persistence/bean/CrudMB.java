@@ -4,7 +4,6 @@ import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
 import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.util.AdminDataModel;
-import com.github.adminfaces.persistence.util.Messages;
 import com.github.adminfaces.persistence.util.SessionFilter;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 

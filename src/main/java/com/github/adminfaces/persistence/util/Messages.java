@@ -22,14 +22,16 @@ public class Messages implements Serializable {
 
     static {
         try {
-            if(FacesContext.getCurrentInstance() != null) {
-                bundle = ResourceBundle.getBundle("messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
-            } else {
-                bundle = ResourceBundle.getBundle("messages", Locale.getDefault());
-            }
-        } catch (MissingResourceException e) {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            Locale locale = fc != null && fc.getViewRoot().getLocale() != null ? fc.getViewRoot().getLocale() : Locale.getDefault();
+            bundle = ResourceBundle.getBundle("messages", locale, new UTF8Control());
+        } catch (Exception e) {
             log.log(Level.WARNING, "Application resource bundle named 'messages' not found in 'resources' folder. You'll not be able to use com.github.adminfaces.persistence.util.Messages utility class.");
         }
+    }
+
+    public static void changeLocale(Locale locale) {
+        bundle = ResourceBundle.getBundle("messages", locale, new UTF8Control());
     }
 
     public static String getMessage(String key) {
