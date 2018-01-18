@@ -28,7 +28,7 @@ public class Messages implements Serializable {
                 bundle = ResourceBundle.getBundle("messages", Locale.getDefault());
             }
         } catch (MissingResourceException e) {
-            log.log(Level.WARNING, "Application resource bundle named 'messages' not found.");
+            log.log(Level.WARNING, "Application resource bundle named 'messages' not found in 'resources' folder. You'll not be able to use com.github.adminfaces.persistence.util.Messages utility class.");
         }
     }
 
