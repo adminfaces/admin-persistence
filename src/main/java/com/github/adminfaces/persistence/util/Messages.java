@@ -5,6 +5,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -21,7 +22,11 @@ public class Messages implements Serializable {
 
     static {
         try {
-            bundle = ResourceBundle.getBundle("messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+            if(FacesContext.getCurrentInstance() != null) {
+                bundle = ResourceBundle.getBundle("messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+            } else {
+                bundle = ResourceBundle.getBundle("messages", Locale.getDefault());
+            }
         } catch (MissingResourceException e) {
             log.log(Level.WARNING, "Application resource bundle named 'messages' not found.");
         }
