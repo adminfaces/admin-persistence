@@ -22,8 +22,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * @author rmpestano
- * Utility service for crud operations
+ * @author  <a href="http://github.com/rmpestano">Rafael Pestano</a>
+ *
+ * Template service for CRUD operations on top of a JPA entity
  */
 @Service
 public class CrudService<T extends PersistenceEntity, PK extends Serializable> extends CriteriaSupportHandler<T> implements CriteriaSupport<T>, Serializable {

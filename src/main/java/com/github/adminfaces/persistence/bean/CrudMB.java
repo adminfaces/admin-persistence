@@ -4,7 +4,6 @@ import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
 import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.util.AdminDataModel;
-import com.github.adminfaces.persistence.util.Messages;
 import com.github.adminfaces.persistence.util.SessionFilter;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 
@@ -20,6 +19,12 @@ import java.util.logging.Logger;
 
 import static com.github.adminfaces.persistence.util.Messages.addDetailMessage;
 
+/**
+ * @author <a href="http://github.com/rmpestano">Rafael Pestano</a>
+ *
+ * Template (JSF) bean for CRUD operations over a JPA entity
+ *
+ */
 public abstract class CrudMB<T extends PersistenceEntity> implements Serializable {
 
     protected final Logger log = Logger.getLogger(getClass().getName());
@@ -54,8 +59,8 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
         if (getCrudService() == null) {
             initServiceViaAnnotation();
-            if(crudService == null) {
-                log.log(Level.SEVERE,"You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
+            if (crudService == null) {
+                log.log(Level.SEVERE, "You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
                 throw new RuntimeException("You need to initialize CrudService on your Managed Bean and call setCrudService(yourService) or override getCrudService()");
             }
         }
@@ -68,7 +73,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     }
 
     private void initServiceViaAnnotation() {
-        if(getClass().isAnnotationPresent(BeanService.class)) {
+        if (getClass().isAnnotationPresent(BeanService.class)) {
             BeanService beanService = getClass().getAnnotation(BeanService.class);
             Class<? extends CrudService> serviceClass = beanService.value();
             crudService = BeanProvider.getContextualReference(serviceClass);
@@ -116,18 +121,13 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         try {
             return ((Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]).newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            log.log(Level.SEVERE,String.format("Could not create entity class for bean %s", getClass().getName()), e);
+            log.log(Level.SEVERE, String.format("Could not create entity class for bean %s", getClass().getName()), e);
             throw new RuntimeException(e);
         }
     }
 
     public Filter<T> createDefaultFilters() {
-        try {
-            return new Filter<>(((Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]).newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
-            log.log(Level.SEVERE,String.format("Could not create filters for bean %s", getClass().getName()), e);
-            throw new RuntimeException(e);
-        }
+        return new Filter<>(createDefaultEntity());
     }
 
     public boolean keepFiltersInSession() {

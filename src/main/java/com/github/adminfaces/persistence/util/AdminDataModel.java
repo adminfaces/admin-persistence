@@ -57,9 +57,11 @@ public class AdminDataModel<T extends PersistenceEntity> extends LazyDataModel<T
     @Override
     public T getRowData(String key) {
         List<T> list = (List<T>) this.getWrappedData();
-        for (T t : list) {
-            if (key.equals(t.getId().toString())) {
-                return t;
+        if(list != null && !list.isEmpty()) {
+            for (T t : list) {
+                if (key.equals(t.getId().toString())) {
+                    return t;
+                }
             }
         }
         return null;
