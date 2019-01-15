@@ -107,6 +107,10 @@ public class CarService extends CrudService<Car, Integer> implements Serializabl
         }
         return carRepository.getTotalPriceByModel(car.getModel().toUpperCase());
     }
+    
+    public List<Car> findCarsInList(List<Car> carsToFind) {
+    	return criteria().in(Car_.id, toListOfIds(carsToFind, new Integer[0])).getResultList();
+    }
 
     @Override
     @Transactional

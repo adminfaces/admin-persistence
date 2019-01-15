@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -59,6 +60,19 @@ public class CrudServiceIt {
                 .hasSize(1)
                 .extracting("id")
                 .contains(new Integer(1));
+    }
+    
+    @Test
+    @DataSet("cars.yml")
+    public void shouldFindCarsByListOfIds() {
+        Car ferrari = new Car(1);
+        Car mustang = new Car(2);
+        List<Car> carsToFind = Arrays.asList(ferrari,mustang);
+        List<Car> cars = carService.findCarsInList(carsToFind);
+        assertThat(cars).isNotNull()
+                .hasSize(2)
+                .extracting("id")
+                .contains(new Integer(1), new Integer(2));
     }
 
     @Test

@@ -17,14 +17,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * @author  <a href="http://github.com/rmpestano">Rafael Pestano</a>
- *
- * Template service for CRUD operations on top of a JPA entity
+ * @author rmpestano
+ * Utility service for crud operations
  */
 @Service
 public class CrudService<T extends PersistenceEntity, PK extends Serializable> extends CriteriaSupportHandler<T> implements CriteriaSupport<T>, Serializable {
@@ -385,5 +385,24 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     public void afterRemove(T entity) {
     }
+    
+    /**
+     * Creates an array of Ids (pks) from a list of entities. 
+     * It is useful when working with `in clauses` on DeltaSpike criteria
+     * because the API only support primitive arrays.   
+     * 
+     * @param entities list of entities to create 
+     * @param idsType the type of the pk list, e.g new Long[0]
+     * 
+     * @return primitive array containing entities pks.  
+     */
+    @SuppressWarnings("unchecked")
+	protected <ID extends Serializable> ID[] toListOfIds(Collection<? extends PersistenceEntity> entities, ID[] idsType) {
+		List<ID> ids = new ArrayList<>();
+		for (PersistenceEntity entity : entities) {
+			ids.add((ID) entity.getId());
+		}
+		return (ID[]) ids.toArray(idsType);
+	}
 
 }
