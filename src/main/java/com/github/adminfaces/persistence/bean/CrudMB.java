@@ -23,6 +23,7 @@ import static com.github.adminfaces.persistence.util.Messages.addDetailMessage;
  * @author <a href="http://github.com/rmpestano">Rafael Pestano</a>
  *
  * Template (JSF) bean for CRUD operations over a JPA entity
+ * @param <T> the entity type
  *
  */
 public abstract class CrudMB<T extends PersistenceEntity> implements Serializable {
@@ -89,6 +90,11 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
         if (id != null && !"".equals(id)) {
             entity = crudService.findById(id);
+            if(entity == null) {
+                log.info(String.format("Entity not found with id %s, a new one will be initialized.",id));
+                id = null;
+                entity = initEntity();
+            }
         }
     }
 
