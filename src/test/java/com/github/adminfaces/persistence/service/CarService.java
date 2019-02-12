@@ -93,6 +93,13 @@ public class CarService extends CrudService<Car, Integer> implements Serializabl
                 .likeIgnoreCase(Car_.model, model)
                 .getResultList();
     }
+    
+    //just to test criteria on a different entity
+    public List<SalesPoint> listSalesPointsByName(String name) {
+        return criteria(SalesPoint.class)
+                .likeIgnoreCase(SalesPoint_.name, "%"+name + "%")
+                .getResultList();
+    }
 
     public List<String> getModels(String query) {
         return criteria()

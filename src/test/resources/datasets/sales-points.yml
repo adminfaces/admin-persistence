@@ -1,0 +1,13 @@
+sales_point:
+  - id1: 10
+    id2: 20
+    name: Ford Motors
+    address: "Ford motors address"
+  - id1: 10
+    id2: 30
+    name: Ford Motors2
+    address: "Ford motors2 address"
+  - id1: 20
+    id2: 10
+    name: Nissan Sales
+    address: "Nissan address"

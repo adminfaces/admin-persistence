@@ -12,7 +12,7 @@ public class SalesPoint implements PersistenceEntity {
     private String name;
 
     private String address;
-
+    
     public SalesPoint() {
     }
 

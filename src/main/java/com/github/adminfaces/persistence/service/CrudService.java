@@ -17,10 +17,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
+import org.apache.deltaspike.data.impl.criteria.QueryCriteria;
 
 /**
  * @author rmpestano
@@ -405,4 +405,12 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 		return (ID[]) ids.toArray(idsType);
 	}
 
+    /**
+     * 
+     * @param entityClass
+     * @return a criteria for underlying entityClass
+     */
+    public <E extends PersistenceEntity> Criteria<E, E> criteria(Class<E> entityClass) {
+        return new QueryCriteria<>(entityClass, entityClass, getEntityManager());
+    }
 }

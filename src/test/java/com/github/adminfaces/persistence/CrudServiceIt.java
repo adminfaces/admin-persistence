@@ -450,7 +450,14 @@ public class CrudServiceIt {
                 .extracting("name")
                 .contains("Sentra");
     }
-
+    
+    @Test
+    @DataSet(value ="sales-points.yml", cleanBefore = true)
+    public void shouldListSalesPointsUsingCarService() {
+        List<SalesPoint> listSalesPointsByName = carService.listSalesPointsByName("Motors");
+        assertThat(listSalesPointsByName).isNotNull().hasSize(2);
+    }
+        
 
     private Car getCar() {
 
