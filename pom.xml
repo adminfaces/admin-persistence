@@ -163,7 +163,6 @@
                     <target>1.7</target>
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
-
             </plugin>
 
             <plugin>
