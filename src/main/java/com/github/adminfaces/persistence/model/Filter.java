@@ -91,6 +91,10 @@ public class Filter<T extends PersistenceEntity> {
     public Object getParam(String key) {
         return getParams().get(key);
     }
+    
+    public <X> X getParam(String key, Class<X> type) {
+        return hasParam(key) ? (X) getParams().get(key) : null;
+    }
 
     public String getStringParam(String key) {
         return hasParam(key) ? getParam(key).toString() : null;
