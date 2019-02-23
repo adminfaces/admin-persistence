@@ -4,6 +4,7 @@ import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
 import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.util.AdminDataModel;
+import com.github.adminfaces.persistence.util.Messages;
 import com.github.adminfaces.persistence.util.SessionFilter;
 import org.apache.deltaspike.core.api.provider.BeanProvider;
 
@@ -81,7 +82,6 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         }
     }
 
-
     //called via preRenderView or viewAction
     public void init() {
         if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
@@ -90,40 +90,39 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
         if (id != null && !"".equals(id)) {
             entity = crudService.findById(id);
-            if(entity == null) {
-                log.info(String.format("Entity not found with id %s, a new one will be initialized.",id));
+            if (entity == null) {
+                log.info(String.format("Entity not found with id %s, a new one will be initialized.", id));
                 id = null;
                 entity = initEntity();
             }
         }
     }
 
-    protected Filter<T> initFilter() {
+    private Filter<T> initFilter() {
         Filter<T> filter;
         if (keepFiltersInSession()) {
             String sessionFilterKey = getClass().getName();
             filter = (Filter<T>) sessionFilter.get(sessionFilterKey);
             if (filter == null) {
-                filter = createDefaultFilters();
+                filter = createFilters();
                 sessionFilter.add(sessionFilterKey, filter);
             }
         } else {
-            filter = createDefaultFilters();
+            filter = createFilters();
         }
 
         return filter;
     }
 
-
-    protected T initEntity() {
-        return createDefaultEntity();
+    private T initEntity() {
+        return createEntity();
     }
 
     public boolean isNew() {
         return entity == null || entity.getId() == null;
     }
 
-    public T createDefaultEntity() {
+    public T createEntity() {
         try {
             return ((Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]).newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -132,8 +131,8 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         }
     }
 
-    public Filter<T> createDefaultFilters() {
-        return new Filter<>(createDefaultEntity());
+    public Filter<T> createFilters() {
+        return new Filter<>(createEntity());
     }
 
     public boolean keepFiltersInSession() {
@@ -206,28 +205,35 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
     public String getCreateMessage() {
         if (createMessage == null) {
-            createMessage = "Record created successfully";
+            createMessage = Messages.getMessage("entity.create-message");
+            if (createMessage.startsWith("??")) {
+                createMessage = "Record created successfully";
+            }
         }
         return createMessage;
     }
 
     public String getRemoveMessage() {
         if (removeMessage == null) {
-            removeMessage = "Record removed successfully";
+            removeMessage = Messages.getMessage("entity.remove-message");
+            if (removeMessage.startsWith("??")) {
+                removeMessage = "Record removed successfully";
+            }
         }
         return removeMessage;
     }
 
-
     public String getUpdateMessage() {
         if (updateMessage == null) {
-            updateMessage = "Record updated successfully";
+            updateMessage = Messages.getMessage("entity.update-message");
+            if (updateMessage.startsWith("??")) {
+                updateMessage = "Record updated successfully";
+            }
         }
         return updateMessage;
     }
 
     // actions
-
     public T save() {
         if (isNew()) {
             beforeInsert();
@@ -288,6 +294,5 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     public static void addDetailMsg(String message, FacesMessage.Severity severity) {
         addDetailMessage(message, severity);
     }
-
 
 }
