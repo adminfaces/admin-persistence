@@ -295,4 +295,19 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         addDetailMessage(message, severity);
     }
 
+    /**
+     * @deprecated use createFilters
+     */
+    @Deprecated
+    public Filter<T> createDefaultFilters() {
+            return createFilters();
+    }
+    
+    /**
+     * @deprecated use createEntity
+     */
+    @Deprecated
+    public T createDefaultEntity() {
+            return createEntity();
+    }
 }
