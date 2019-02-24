@@ -373,7 +373,6 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     }
     
     public void beforeAll(T entity) {
-        
     }
 
     public void beforeInsert(T entity) {
@@ -395,7 +394,6 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     }
     
     public void afterAll(T entity) {
-        
     }
     
     /**
