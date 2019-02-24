@@ -101,10 +101,11 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         if (entity == null) {
             throw new RuntimeException("Record cannot be null");
         }
-
+        beforeAll(entity);
         beforeInsert(entity);
         entityManager.persist(entity);
         afterInsert(entity);
+        afterAll(entity);
     }
 
     public void remove(T entity) {
@@ -115,12 +116,14 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         if (entity.getId() == null) {
             throw new RuntimeException("Record cannot be transient");
         }
+        beforeAll(entity);
         beforeRemove(entity);
         if (!entityManager.contains(entity)) {
             entity = entityManager.find(entityClass, entity.getId());
         }
         entityManager.remove(entity);
         afterRemove(entity);
+        afterAll(entity);
     }
 
 
@@ -142,10 +145,12 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
             throw new RuntimeException("Record cannot be transient");
         }
 
+        beforeAll(entity);
         beforeUpdate(entity);
         entity = entityManager.merge(entity);
         entityManager.flush();
         afterUpdate(entity);
+        afterAll(entity);
         return entity;
     }
 
@@ -263,7 +268,6 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         }
     }
 
-
     private void addInExampleRestriction(Criteria criteria, T example, Attribute<T, ?> attribute) {
         PluralAttribute<T, ?, ?> listAttribute = (PluralAttribute<T, ?, ?>) attribute;
         Class joinClass = listAttribute.getElementType().getJavaType();
@@ -367,6 +371,10 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
+    
+    public void beforeAll(T entity) {
+        
+    }
 
     public void beforeInsert(T entity) {
     }
@@ -384,6 +392,10 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     }
 
     public void afterRemove(T entity) {
+    }
+    
+    public void afterAll(T entity) {
+        
     }
     
     /**
