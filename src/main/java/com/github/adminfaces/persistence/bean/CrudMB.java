@@ -205,7 +205,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
     public String getCreateMessage() {
         if (createMessage == null) {
-            createMessage = Messages.getMessage("entity.create-message");
+            createMessage = Messages.getMessage("entity.create-message", entity.getClass().getSimpleName());
             if (createMessage.startsWith("??")) {
                 createMessage = "Record created successfully";
             }
@@ -215,7 +215,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
     public String getRemoveMessage() {
         if (removeMessage == null) {
-            removeMessage = Messages.getMessage("entity.remove-message");
+            removeMessage = Messages.getMessage("entity.remove-message", entity.getClass().getSimpleName());
             if (removeMessage.startsWith("??")) {
                 removeMessage = "Record removed successfully";
             }
@@ -225,7 +225,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
     public String getUpdateMessage() {
         if (updateMessage == null) {
-            updateMessage = Messages.getMessage("entity.update-message");
+            updateMessage = Messages.getMessage("entity.update-message", entity.getClass().getSimpleName());
             if (updateMessage.startsWith("??")) {
                 updateMessage = "Record updated successfully";
             }
