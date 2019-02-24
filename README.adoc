@@ -50,7 +50,7 @@ First include it in your classpath:
 <dependency>
     <groupId>com.github.adminfaces</groupId>
     <artifactId>admin-persistence</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.5</version>
 </dependency>
 ----
 +
