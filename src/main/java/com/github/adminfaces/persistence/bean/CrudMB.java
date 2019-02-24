@@ -235,6 +235,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
     // actions
     public T save() {
+        beforeAll();
         if (isNew()) {
             beforeInsert();
             crudService.insert(entity);
@@ -244,14 +245,16 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
             entity = crudService.update(entity);
             afterUpdate();
         }
-
+        afterAll();
         return entity;
     }
 
     public void remove() {
+        beforeAll();
         beforeRemove();
         crudService.remove(entity);
         afterRemove();
+        afterAll();
     }
 
     public void clear() {
@@ -263,9 +266,11 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         entity = initEntity();
         id = null;
     }
+    
+    public void beforeAll() {
+    }
 
     public void beforeRemove() {
-
     }
 
     public void afterRemove() {
@@ -273,7 +278,6 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     }
 
     public void beforeInsert() {
-
     }
 
     public void afterInsert() {
@@ -285,6 +289,9 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
     public void afterUpdate() {
         addDetailMsg(getUpdateMessage());
+    }
+    
+    public void afterAll() {
     }
 
     public static void addDetailMsg(String message) {
@@ -300,14 +307,14 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
      */
     @Deprecated
     public Filter<T> createDefaultFilters() {
-            return createFilters();
+        return createFilters();
     }
-    
+
     /**
      * @deprecated use createEntity
      */
     @Deprecated
     public T createDefaultEntity() {
-            return createEntity();
+        return createEntity();
     }
 }
