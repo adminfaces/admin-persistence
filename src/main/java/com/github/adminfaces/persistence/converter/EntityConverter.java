@@ -1,7 +1,6 @@
 package com.github.adminfaces.persistence.converter;
 
 
-import com.github.adminfaces.persistence.model.PersistenceEntity;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -13,7 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-@FacesConverter(forClass = PersistenceEntity.class, value = "entityConverter")
+@FacesConverter(value = "entityConverter")
 public class EntityConverter implements Converter {
 
 	@Override
