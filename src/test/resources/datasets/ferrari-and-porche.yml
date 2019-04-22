@@ -1,0 +1,27 @@
+car:
+  - id: 1
+    model: "Ferrari"
+    name: "Spider"
+    price: 99999.9
+    version: 0
+  - id: 2
+    model: "Ferrari"
+    name: "Testarossa"
+    price: 12999.0
+    version: 0
+  - id: 3
+    model: "Porche"
+    name: "Avenger"
+    price: 1390.3
+    version: 0
+  - id: 4
+    model: "Porche"
+    name: "Cayman"
+    price: 10000.0
+    version: 0    
+
+brand:
+
+sales_point:
+
+car_sales_point:

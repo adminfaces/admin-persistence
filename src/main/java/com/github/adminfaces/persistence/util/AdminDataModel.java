@@ -1,21 +1,24 @@
 package com.github.adminfaces.persistence.util;
 
+import com.github.adminfaces.persistence.model.AdminMultiSort;
 import com.github.adminfaces.persistence.model.AdminSort;
 import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
 import com.github.adminfaces.persistence.service.CrudService;
+import java.util.ArrayList;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
 import java.util.List;
 import java.util.Map;
+import org.primefaces.model.SortMeta;
+import static org.primefaces.model.SortOrder.ASCENDING;
 
 public class AdminDataModel<T extends PersistenceEntity> extends LazyDataModel<T> {
 
     private CrudService<T, ?> crudService;
     private Filter<T> filter;
     private boolean keepFiltersInSession;
-
 
     public AdminDataModel(CrudService<T, ?> crudService, Filter<T> filter) {
         this(crudService, filter, true);
@@ -29,24 +32,37 @@ public class AdminDataModel<T extends PersistenceEntity> extends LazyDataModel<T
 
     @Override
     public List<T> load(int first, int pageSize, String sortField, SortOrder sortOrder,
-                        Map<String, Object> filters) {
-        AdminSort order = null;
-        if (sortOrder != null) {
-            order = sortOrder.equals(SortOrder.ASCENDING) ? AdminSort.ASCENDING
-                    : sortOrder.equals(SortOrder.DESCENDING) ? AdminSort.DESCENDING
-                    : AdminSort.UNSORTED;
-        }
+        Map<String, Object> filters) {
+        List<SortMeta> multiSortMeta = new ArrayList<>();
+        multiSortMeta.add(new SortMeta(null, sortField, sortOrder, null));
+        return load(first, pageSize, multiSortMeta, filters);
+    }
 
-        if (filters == null || filters.isEmpty() && keepFiltersInSession) {
+    @Override
+    public List<T> load(int first, int pageSize, List<SortMeta> multiSortMeta, Map<String, Object> filters) {
+        List<AdminMultiSort> adminMultiSort = new ArrayList<>();
+        if (multiSortMeta != null && !multiSortMeta.isEmpty()) {
+            for (SortMeta sortMeta : multiSortMeta) {
+                AdminSort adminSort = AdminSort.UNSORTED;
+                if (ASCENDING.equals(sortMeta.getSortOrder())) {
+                    adminSort = AdminSort.ASCENDING;
+                } else if (SortOrder.DESCENDING.equals(sortMeta.getSortOrder())) {
+                    adminSort = AdminSort.DESCENDING;
+                }
+                adminMultiSort.add(new AdminMultiSort(adminSort, sortMeta.getSortField()));
+            }
+        }
+        if ((filters == null || filters.isEmpty()) && keepFiltersInSession) {
             filters = filter.getParams();
         }
 
         filter.setFirst(first).setPageSize(pageSize)
-                .setSortField(sortField).setAdminSort(order)
-                .setParams(filters);
+            .setMultiSort(adminMultiSort)
+            .setParams(filters);
         List<T> list = crudService.paginate(filter);
         setRowCount(crudService.count(filter).intValue());
         return list;
+
     }
 
     @Override
@@ -57,7 +73,7 @@ public class AdminDataModel<T extends PersistenceEntity> extends LazyDataModel<T
     @Override
     public T getRowData(String key) {
         List<T> list = (List<T>) this.getWrappedData();
-        if(list != null && !list.isEmpty()) {
+        if (list != null && !list.isEmpty()) {
             for (T t : list) {
                 if (key.equals(t.getId().toString())) {
                     return t;

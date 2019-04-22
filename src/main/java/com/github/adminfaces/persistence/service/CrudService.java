@@ -1,5 +1,6 @@
 package com.github.adminfaces.persistence.service;
 
+import com.github.adminfaces.persistence.model.AdminMultiSort;
 import com.github.adminfaces.persistence.model.AdminSort;
 import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
@@ -66,24 +67,21 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
 
     public List<T> paginate(Filter<T> filter) {
         Criteria<T, T> criteria = configRestrictions(filter);
-
-        String sortField = filter.getSortField();
-        if (sortField != null) {
-            SingularAttribute sortAttribute = entityManager.getMetamodel().entity(entityClass).getSingularAttribute(sortField);
-            if (filter.getAdminSort().equals(AdminSort.UNSORTED)) {
-                filter.setAdminSort(AdminSort.ASCENDING);
-            }
-            if (filter.getAdminSort().equals(AdminSort.ASCENDING)) {
-                criteria.orderAsc(sortAttribute);
-            } else {
-                criteria.orderDesc(sortAttribute);
-            }
-        }
-
+        configSort(filter, criteria);
         return criteria.createQuery()
                 .setFirstResult(filter.getFirst())
                 .setMaxResults(filter.getPageSize())
                 .getResultList();
+    }
+
+    protected void configSort(Filter<T> filter, Criteria<T, T> criteria) {
+        if (!filter.getMultiSort().isEmpty()) { //multi sort
+            for (AdminMultiSort adminMultiSort : filter.getMultiSort()) {
+                addSort(criteria, adminMultiSort.getAdminSort(), adminMultiSort.getSortField());
+            }
+        } else { //single field sort 
+            addSort(criteria, filter.getAdminSort(), filter.getSortField());
+        }
     }
 
     /**
@@ -422,5 +420,19 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      */
     public <E extends PersistenceEntity> Criteria<E, E> criteria(Class<E> entityClass) {
         return new QueryCriteria<>(entityClass, entityClass, getEntityManager());
+    }
+
+    protected void addSort(Criteria<T, T> criteria, AdminSort adminSort, String sortField) {
+        if (sortField != null) {
+            SingularAttribute sortAttribute = entityManager.getMetamodel().entity(entityClass).getSingularAttribute(sortField);
+            if (adminSort.equals(AdminSort.UNSORTED)) {
+                adminSort = AdminSort.ASCENDING;
+            }
+            if (adminSort.equals(AdminSort.ASCENDING)) {
+                criteria.orderAsc(sortAttribute);
+            } else {
+                criteria.orderDesc(sortAttribute);
+            }
+        }
     }
 }

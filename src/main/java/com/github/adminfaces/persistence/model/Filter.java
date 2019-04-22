@@ -1,22 +1,24 @@
 package com.github.adminfaces.persistence.model;
 
-
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Created by rmpestano on 9/7/14.
- * class which holds database pagination metadata
+ * Created by rmpestano on 9/7/14.class which holds database pagination metadata
+ * @param <T> the entity which this filter refers to.
  */
-public class Filter<T extends PersistenceEntity> {
+public class Filter<T extends PersistenceEntity> implements Serializable {
+
     private T entity;
     private int first;
     private int pageSize;
     private String sortField;
     private AdminSort adminSort;
-    private Map<String, Object> params = new HashMap<String, Object>();
-
+    private List<AdminMultiSort> multiSort = new ArrayList<>();
+    private Map<String, Object> params = new HashMap<>();
 
     public Filter() {
     }
@@ -66,6 +68,22 @@ public class Filter<T extends PersistenceEntity> {
         return this;
     }
 
+    public List<AdminMultiSort> getMultiSort() {
+        return multiSort;
+    }
+
+    public Filter setMultiSort(List<AdminMultiSort> multiSort) {
+        this.multiSort = multiSort;
+        return this;
+    }
+
+    public Filter addMultSort(AdminSort adminSort, String sortField) {
+        if (!multiSort.contains(adminSort)) {
+            multiSort.add(new AdminMultiSort(adminSort, sortField));
+        }
+        return this;
+    }
+
     public Map<String, Object> getParams() {
         return params;
     }
@@ -91,7 +109,7 @@ public class Filter<T extends PersistenceEntity> {
     public Object getParam(String key) {
         return getParams().get(key);
     }
-    
+
     public <X> X getParam(String key, Class<X> type) {
         return hasParam(key) ? (X) getParams().get(key) : null;
     }
