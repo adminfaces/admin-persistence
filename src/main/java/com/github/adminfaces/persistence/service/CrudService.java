@@ -207,7 +207,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      * for <code>oneToOne</code> associations the entity PK will be compared and for oneToMany association an <code>in</code> for comparing associated entities PKs.
      *
      * @param example         An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider.
+     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then non null attributes will be used.
      * @return A criteria restricted by example.
      * @throws RuntimeException If no attribute is provided.
      */
@@ -221,7 +221,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      *
      * @param criteria        a criteria to add restrictions based on the example entity.
      * @param example         An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider.
+     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then non null attributes will be used.
      * @return A criteria restricted by example.
      * @throws RuntimeException If no attribute is provided.
      */
@@ -326,7 +326,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
      * It will use 'likeIgnoreCase' for comparing STRING attributes of the example entity.
      *
      * @param example         An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider.
+     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then non null String attributes will be used.
      * @return A criteria restricted by example using 'likeIgnoreCase' for comparing attributes
      * @throws RuntimeException If no attribute is provided.
      */
@@ -337,7 +337,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     /**
      * @param criteria        a pre populated criteria to add example based <code>like</code> restrictions
      * @param example         An entity whose attribute's value will be used for creating a criteria
-     * @param usingAttributes attributes from example entity to consider.
+     * @param usingAttributes attributes from example entity to consider. If no attribute is provided then non null String attributes will be used.
      * @return A criteria restricted by example using <code>likeIgnoreCase</code> for comparing attributes
      * @throws RuntimeException If no attribute is provided.
      */
