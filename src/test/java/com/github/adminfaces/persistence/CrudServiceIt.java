@@ -420,11 +420,23 @@ public class CrudServiceIt {
             .contains("porche avenger");
     }
 
-    @Test(expected = RuntimeException.class)
     @DataSet("cars.yml")
-    public void shouldNotFindCarsByExampleWithoutAttributes() {
+    public void shouldFindCarsByExampleWithoutPassingAttributes() {
         Car carExample = new Car().model("Ferrari");
         List<Car> cars = crudService.example(carExample).getResultList();
+        assertThat(cars).isNotNull().hasSize(1)
+                .extracting("model")
+                .contains("Ferrari");
+    }
+
+    @Test
+    @DataSet("cars.yml")
+    public void shouldFindCarsByExampleLikeWithoutPassingAttributes() {
+        Car carExample =  new Car().model("porche").name("%avenger");
+        List<Car> cars = crudService.exampleLike(carExample).getResultList();
+        assertThat(cars).isNotNull().hasSize(1)
+            .extracting("name")
+            .contains("porche avenger");
     }
 
     @Test

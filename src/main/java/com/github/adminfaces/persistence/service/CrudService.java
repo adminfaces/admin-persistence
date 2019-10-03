@@ -17,9 +17,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import org.apache.deltaspike.data.impl.criteria.QueryCriteria;
 
@@ -234,7 +232,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         }
 
         if (usingAttributes == null || usingAttributes.length == 0) {
-            throw new RuntimeException("Please provide attributes to example criteria.");
+            usingAttributes = resolveEntityAttributes(example);
         }
 
         for (Attribute<T, ?> usingAttribute : usingAttributes) {
@@ -247,6 +245,27 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
         }
 
         return criteria;
+    }
+
+    private Attribute<T, ?>[] resolveEntityAttributes(T example) {
+        Set<Attribute<?, ?>> attributes = (Set<Attribute<?, ?>>) getEntityManager().getMetamodel().entity(example.getClass()).getAttributes();
+        if(attributes != null && !attributes.isEmpty()) {
+           return attributes.toArray(new Attribute[0]);
+        }
+        return Collections.emptyList().toArray(new Attribute[0]);
+    }
+
+    private SingularAttribute<T, String>[] resolveEntitySingularStringAttributes(T example) {
+        Set<SingularAttribute<?, ?>> singularAttributes = (Set<SingularAttribute<?, ?>>) getEntityManager().getMetamodel().entity(example.getClass()).getSingularAttributes();
+        List<SingularAttribute<T, String>> stringAttributes = new ArrayList<>();
+        if(singularAttributes != null && !singularAttributes.isEmpty()) {
+            for (SingularAttribute<?, ?> singularAttribute : singularAttributes) {
+                if(singularAttribute.getType().getJavaType().isAssignableFrom(String.class)) {
+                    stringAttributes.add((SingularAttribute<T, String>) singularAttribute);
+                }
+            }
+        }
+        return  stringAttributes.toArray(new SingularAttribute[0]);
     }
 
 
@@ -325,7 +344,7 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
     public Criteria exampleLike(Criteria criteria, T example, SingularAttribute<T, String>... usingAttributes) {
 
         if (usingAttributes == null || usingAttributes.length == 0) {
-            throw new RuntimeException("Please provide attributes to example criteria.");
+            usingAttributes = resolveEntitySingularStringAttributes(example);
         }
 
         if (criteria == null) {
