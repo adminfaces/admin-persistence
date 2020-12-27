@@ -8,6 +8,7 @@ import org.apache.deltaspike.data.api.criteria.Criteria;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 import org.apache.deltaspike.data.impl.handler.CriteriaSupportHandler;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -26,6 +27,7 @@ import org.apache.deltaspike.data.impl.criteria.QueryCriteria;
  * Utility service for crud operations
  */
 @Service
+@Dependent
 public class CrudService<T extends PersistenceEntity, PK extends Serializable> extends CriteriaSupportHandler<T> implements CriteriaSupport<T>, Serializable {
 
     private static final Logger LOG = Logger.getLogger(CrudService.class.getName());
@@ -48,12 +50,24 @@ public class CrudService<T extends PersistenceEntity, PK extends Serializable> e
                 LOG.warning(String.format("Could not resolve entity type and entity key via injection point [%s]. Now trying to resolve via generic superclass of [%s].", ip.getMember().getName(), getClass().getName()));
             }
         }
-
         if (entityClass == null) {
             //Used on service inheritance, e.g: MyService extends CrudService<Entity, Key>
-            entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-            entityKey = (Class<PK>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+            ParameterizedType parameterizedType = getParameterizedType();
+            entityClass = (Class<T>) parameterizedType.getActualTypeArguments()[0];
+            entityKey = (Class<PK>) parameterizedType.getActualTypeArguments()[1];
         }
+    }
+
+    private ParameterizedType getParameterizedType() {
+        ParameterizedType parameterizedType;
+        if(getClass().getGenericSuperclass() instanceof ParameterizedType) {
+            parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
+        } else if (getClass().getSuperclass().getGenericSuperclass() instanceof ParameterizedType) {
+            parameterizedType = (ParameterizedType) getClass().getSuperclass().getGenericSuperclass();
+        } else {
+            parameterizedType = (ParameterizedType) getClass().getSuperclass().getSuperclass().getGenericSuperclass();
+        }
+        return parameterizedType;
     }
 
     private void resolveEntity(InjectionPoint ip) {

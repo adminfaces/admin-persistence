@@ -1,5 +1,7 @@
 package com.github.adminfaces.persistence.model;
 
+import org.primefaces.model.FilterMeta;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,6 +88,14 @@ public class Filter<T extends PersistenceEntity> implements Serializable {
 
     public Map<String, Object> getParams() {
         return params;
+    }
+
+    public Map<String, FilterMeta> getPrimeFilterParams() {
+        Map<String, FilterMeta> filterMetaMap = new HashMap<>();
+        for (Map.Entry<String, Object> filterEntry : params.entrySet()) {
+            filterMetaMap.put(filterEntry.getKey(), new FilterMeta(filterEntry.getKey(),filterEntry.getValue()));
+        }
+        return filterMetaMap;
     }
 
     public T getEntity() {

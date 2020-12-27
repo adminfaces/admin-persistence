@@ -6,9 +6,12 @@ import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
 import com.github.adminfaces.persistence.service.CrudService;
 import java.util.ArrayList;
+
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.primefaces.model.SortMeta;
@@ -32,17 +35,17 @@ public class AdminDataModel<T extends PersistenceEntity> extends LazyDataModel<T
 
     @Override
     public List<T> load(int first, int pageSize, String sortField, SortOrder sortOrder,
-        Map<String, Object> filters) {
-        List<SortMeta> multiSortMeta = new ArrayList<>();
-        multiSortMeta.add(new SortMeta(null, sortField, sortOrder, null));
+        Map<String, FilterMeta> filters) {
+        Map<String, SortMeta> multiSortMeta = new HashMap<>();
+        multiSortMeta.put(sortField, new SortMeta(null, sortField, sortOrder, null));
         return load(first, pageSize, multiSortMeta, filters);
     }
 
     @Override
-    public List<T> load(int first, int pageSize, List<SortMeta> multiSortMeta, Map<String, Object> filters) {
+    public List<T> load(int first, int pageSize, Map<String, SortMeta> multiSortMeta, Map<String, FilterMeta> filters) {
         List<AdminMultiSort> adminMultiSort = new ArrayList<>();
         if (multiSortMeta != null && !multiSortMeta.isEmpty()) {
-            for (SortMeta sortMeta : multiSortMeta) {
+            for (SortMeta sortMeta : multiSortMeta.values()) {
                 AdminSort adminSort = AdminSort.UNSORTED;
                 if (ASCENDING.equals(sortMeta.getSortOrder())) {
                     adminSort = AdminSort.ASCENDING;
@@ -53,16 +56,24 @@ public class AdminDataModel<T extends PersistenceEntity> extends LazyDataModel<T
             }
         }
         if ((filters == null || filters.isEmpty()) && keepFiltersInSession) {
-            filters = filter.getParams();
+            filters = filter.getPrimeFilterParams();
         }
 
         filter.setFirst(first).setPageSize(pageSize)
             .setMultiSort(adminMultiSort)
-            .setParams(filters);
+            .setParams(toObjectMap(filters));
         List<T> list = crudService.paginate(filter);
         setRowCount(crudService.count(filter).intValue());
         return list;
 
+    }
+
+    private Map<String, Object> toObjectMap(Map<String, FilterMeta> filters) {
+        final Map<String, Object> objectMap = new HashMap<>();
+        for (Map.Entry<String, FilterMeta> entry : filters.entrySet()) {
+            objectMap.put(entry.getKey(), entry.getValue().getFilterValue());
+        }
+        return objectMap;
     }
 
     @Override

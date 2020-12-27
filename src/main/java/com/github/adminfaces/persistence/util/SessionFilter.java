@@ -1,6 +1,5 @@
 package com.github.adminfaces.persistence.util;
 
-import com.github.adminfaces.persistence.bean.CrudMB;
 import com.github.adminfaces.persistence.model.Filter;
 import com.github.adminfaces.persistence.model.PersistenceEntity;
 

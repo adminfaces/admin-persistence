@@ -6,9 +6,11 @@ import com.github.adminfaces.persistence.service.CrudService;
 import com.github.adminfaces.persistence.util.AdminDataModel;
 import com.github.adminfaces.persistence.util.Messages;
 import com.github.adminfaces.persistence.util.SessionFilter;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -50,6 +52,9 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
     @Inject
     protected SessionFilter sessionFilter; //save filters in session
 
+    @Inject
+    protected BeanManager beanManager;
+
     private String createMessage;
 
     private String removeMessage;
@@ -78,7 +83,7 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
         if (getClass().isAnnotationPresent(BeanService.class)) {
             BeanService beanService = getClass().getAnnotation(BeanService.class);
             Class<? extends CrudService> serviceClass = beanService.value();
-            crudService = BeanProvider.getContextualReference(serviceClass);
+            crudService = getBean(serviceClass);
         }
     }
 
@@ -96,6 +101,25 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
                 entity = initEntity();
             }
         }
+    }
+
+    private ParameterizedType getParameterizedType() {
+        ParameterizedType parameterizedType;
+        if(getClass().getGenericSuperclass() instanceof ParameterizedType) {
+            parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
+        } else if (getClass().getSuperclass().getGenericSuperclass() instanceof ParameterizedType) {
+            parameterizedType = (ParameterizedType) getClass().getSuperclass().getGenericSuperclass();
+        } else {
+            parameterizedType = (ParameterizedType) getClass().getSuperclass().getSuperclass().getGenericSuperclass();
+        }
+        return parameterizedType;
+    }
+
+    protected  <T> T getBean(Class<T> clazz) {
+        Bean<T> bean = (Bean<T>) beanManager.getBeans(clazz).iterator().next();
+        CreationalContext<T> ctx = beanManager.createCreationalContext(bean);
+        T object = (T) beanManager.getReference(bean, clazz, ctx);
+        return object;
     }
 
     private Filter<T> initFilter() {
@@ -124,7 +148,8 @@ public abstract class CrudMB<T extends PersistenceEntity> implements Serializabl
 
     public T createEntity() {
         try {
-            return ((Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]).newInstance();
+            ParameterizedType parameterizedType = getParameterizedType();
+            return ((Class<T>) parameterizedType.getActualTypeArguments()[0]).newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             log.log(Level.SEVERE, String.format("Could not create entity class for bean %s", getClass().getName()), e);
             throw new RuntimeException(e);
